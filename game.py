@@ -30,16 +30,20 @@ player_rect = pygame.Rect((pos_x, pos_y), player_size)
 while True:
     display.fill((colour.white()))
 
-    if (moving_right):
-        pos_x = pos_x + 1
-    if (moving_left):
-        pos_x = pos_x - 1
-    if (moving_up):
-        pos_y = pos_y - 1
-    if (moving_down):
-        pos_y = pos_y + 1
+    movement = [0,0]
 
-    player_rect = pygame.Rect((pos_x, pos_y), player_size)
+    if (moving_right):
+        movement[0] = movement[0] + 1
+    if (moving_left):
+        movement[0] = movement[0] - 1
+    if (moving_up):
+        movement[1] = movement[1] - 1
+    if (moving_down):
+        movement[1] = movement[1] + 1
+
+    player_rect = player_rect.move(movement[0],movement[1])
+
+    #player_rect = pygame.Rect((pos_x, pos_y), player_size)
 
     pygame.draw.rect(display, colour.red(), player_rect)
 
