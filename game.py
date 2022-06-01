@@ -1,4 +1,4 @@
-import pygame, sys
+import pygame, sys, math
 import colour, player, enemies
 from pygame.locals import *
 
@@ -30,6 +30,13 @@ enemy_list.append(enemies.Slug(100, 100))
 
 enemy_list.append(enemies.Rat(200, 100))
 
+def cursor_player_angle(player_pos,cursor_pos):
+    myradians = math.atan2(cursor_pos[1]-player_pos[1], cursor_pos[0]-player_pos[0])
+    mydegrees = math.degrees(myradians)
+    return mydegrees
+
+print(cursor_player_angle((20,20),(20,20)))
+
 while True:
     display.fill((colour.white()))
 
@@ -46,6 +53,17 @@ while True:
 
     player.move(movement[0],movement[1])
 
+    x, y = pygame.mouse.get_pos()
+    mouse_pos = (x//zoom,y//zoom)
+
+    player.angle = cursor_player_angle(player.get_center(),mouse_pos) * -1
+    rotimage = pygame.transform.rotate(player.sprite,player.angle)
+    rotimage.set_colorkey((170,0,170))
+    rect = rotimage.get_rect(center=player.get_center())
+
+    display.blit(rotimage,rect)
+    #pygame.draw.rect(display, (0,0,255), pygame.Rect(player.get_center(),(1,1)))
+
     for enemy in enemy_list[:]:
         movement = [0,0]
         p_center = player.get_center()
@@ -61,8 +79,6 @@ while True:
 
         enemy.move(movement[0],movement[1])
         pygame.draw.rect(display, enemy.colour, enemy.rect)
-
-    display.blit(player.sprite,(player.x,player.y))
 
     for event in pygame.event.get():
         if event.type == QUIT:

@@ -10,6 +10,7 @@ class Player:
         self.rect = pygame.Rect((x,y),self.size)
         self.colour = (255,0,0)
         self.sprite = pygame.image.load("arrow.png")
+        self.angle = 0
 
     def move(self,x,y):
         self.x = self.x + x
