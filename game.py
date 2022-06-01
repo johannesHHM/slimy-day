@@ -1,5 +1,5 @@
 import pygame, sys
-import colour
+import colour, player, enemies
 from pygame.locals import *
 
 clock = pygame.time.Clock()
@@ -7,7 +7,7 @@ clock = pygame.time.Clock()
 pygame.init()
 
 WINDOW_SIZE = (720, 720)
-zoom = 12
+zoom = 2
 
 DISPLAY_SIZE = (WINDOW_SIZE[0] // zoom, WINDOW_SIZE[1] // zoom)
 print ('x: ' + str(DISPLAY_SIZE[0]) + ' y: ' + str(DISPLAY_SIZE[1]))
@@ -20,12 +20,15 @@ moving_right = False
 moving_up = False
 moving_down = False
 
-pos_x = 20
-pos_y = 20
+player = player.Player(20,20)
 
-player_size = (5,5)
-player_rect = pygame.Rect((pos_x, pos_y), player_size)
+enemy_list = []
 
+enemy_list.append(enemies.Slug(0, 0))
+enemy_list.append(enemies.Slug(100, 0))
+enemy_list.append(enemies.Slug(100, 100))
+
+enemy_list.append(enemies.Rat(200, 100))
 
 while True:
     display.fill((colour.white()))
@@ -33,19 +36,33 @@ while True:
     movement = [0,0]
 
     if (moving_right):
-        movement[0] = movement[0] + 1
+        movement[0] = movement[0] + 2
     if (moving_left):
-        movement[0] = movement[0] - 1
+        movement[0] = movement[0] - 2
     if (moving_up):
-        movement[1] = movement[1] - 1
+        movement[1] = movement[1] - 2
     if (moving_down):
-        movement[1] = movement[1] + 1
+        movement[1] = movement[1] + 2
 
-    player_rect = player_rect.move(movement[0],movement[1])
+    player.move(movement[0],movement[1])
 
-    #player_rect = pygame.Rect((pos_x, pos_y), player_size)
+    for enemy in enemy_list[:]:
+        movement = [0,0]
+        p_center = player.get_center()
 
-    pygame.draw.rect(display, colour.red(), player_rect)
+        if(p_center[0] + 1 > enemy.center()[0]):
+            movement[0] = movement[0] + enemy.speed
+        if(p_center[0] - 1 < enemy.center()[0]):
+            movement[0] = movement[0] - enemy.speed
+        if(p_center[1] - 1 < enemy.center()[1]):
+            movement[1] = movement[1] - enemy.speed
+        if(p_center[1] + 1 > enemy.center()[1]):
+            movement[1] = movement[1] + enemy.speed
+
+        enemy.move(movement[0],movement[1])
+        pygame.draw.rect(display, enemy.colour, enemy.rect)
+
+    display.blit(player.sprite,(player.x,player.y))
 
     for event in pygame.event.get():
         if event.type == QUIT:
