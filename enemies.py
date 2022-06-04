@@ -1,39 +1,31 @@
 import pygame
 
-class Slug:
-    def __init__(self,x,y):
-        self.health = 3
+class Enemy:
+    def __init__(self,health,x,y,speed,size,color):
+        self.health = health
         self.x = x
         self.y = y
-        self.speed = 0.5
-        self.size = (13,13)
-        self.rect = pygame.Rect((x,y),self.size)
-        self.colour = (0,255,0)
+        self.speed = speed
+        self.size = size
+        self.rect = pygame.Rect((x,y),size)
+        self.colour = color
 
-    def move(self,x,y):
-        self.x = self.x + x
-        self.y = self.y + y
-        self.rect = pygame.Rect((self.x,self.y),self.size)
+    def collision_test(movement):
+        t=0
 
     def center(self):
         center = (self.x + self.size[0]//2,self.y + self.size[1]//2)
         return center
 
-class Rat:
-    def __init__(self,x,y):
-        self.health = 3
-        self.x = x
-        self.y = y
-        self.speed = 1
-        self.size = (11,11)
-        self.rect = pygame.Rect((x,y),self.size)
-        self.colour = (100,100,100)
-
-    def move(self,x,y):
-        self.x = self.x + x
-        self.y = self.y + y
+    def move(self,movement):
+        self.x = self.x + movement[0]
+        self.y = self.y + movement[1]
         self.rect = pygame.Rect((self.x,self.y),self.size)
 
-    def center(self):
-        center = (self.x + self.size[0]//2,self.y + self.size[1]//2)
-        return center
+class Slug(Enemy):
+    def __init__(self,x,y):
+        super().__init__(3,x,y,0.5,(13,13),(0,255,0))
+
+class Rat(Enemy):
+    def __init__(self,x,y):
+        super().__init__(3,x,y,1,(11,11),(100,100,100))

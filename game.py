@@ -1,5 +1,5 @@
 import pygame, sys, math
-import colour, player, enemies
+import color, player, enemies
 from pygame.locals import *
 
 clock = pygame.time.Clock()
@@ -21,6 +21,7 @@ moving_up = False
 moving_down = False
 
 player = player.Player(20,20)
+color = color.Color((170,0,170))
 
 enemy_list = []
 
@@ -38,7 +39,7 @@ def cursor_player_angle(player_pos,cursor_pos):
 print(cursor_player_angle((20,20),(20,20)))
 
 while True:
-    display.fill((colour.white()))
+    display.fill(color.white)
 
     movement = [0,0]
 
@@ -58,7 +59,7 @@ while True:
 
     player.angle = cursor_player_angle(player.get_center(),mouse_pos) * -1
     rotimage = pygame.transform.rotate(player.sprite,player.angle)
-    rotimage.set_colorkey((170,0,170))
+    rotimage.set_colorkey(color.colorkey)
     rect = rotimage.get_rect(center=player.get_center())
 
     display.blit(rotimage,rect)
@@ -67,6 +68,21 @@ while True:
     for enemy in enemy_list[:]:
         movement = [0,0]
         p_center = player.get_center()
+
+        collision = {
+            "RIGHT": False,
+            "LEFT": False,
+            "TOP": False,
+            "BOTTOM": False
+        }
+        collide_list = []
+        for enemy_else in enemy_list:
+            if enemy != enemy_else:
+                if enemy_else.rect.colliderect(enemy.rect):
+                    collide_list.append(enemy_else)
+
+        for enemy_collide in collide_list[:]:
+            t=0
 
         if(p_center[0] + 1 > enemy.center()[0]):
             movement[0] = movement[0] + enemy.speed
@@ -77,7 +93,10 @@ while True:
         if(p_center[1] + 1 > enemy.center()[1]):
             movement[1] = movement[1] + enemy.speed
 
-        enemy.move(movement[0],movement[1])
+        if len(collide_list) > 0:
+            movement = [0,0]
+
+        enemy.move(movement)
         pygame.draw.rect(display, enemy.colour, enemy.rect)
 
     for event in pygame.event.get():
@@ -86,23 +105,23 @@ while True:
             sys.exit()
 
         if event.type == pygame.KEYDOWN:
-            if event.key == K_RIGHT:
+            if event.key == K_RIGHT or event.key == K_d:
                 moving_right = True
-            if event.key == K_LEFT:
+            if event.key == K_LEFT or event.key == K_a:
                 moving_left = True
-            if event.key == K_UP:
+            if event.key == K_UP or event.key == K_w:
                 moving_up = True
-            if event.key == K_DOWN:
+            if event.key == K_DOWN or event.key == K_s:
                 moving_down = True
 
         if event.type == KEYUP:
-            if event.key == K_RIGHT:
+            if event.key == K_RIGHT or event.key == K_d:
                 moving_right = False
-            if event.key == K_LEFT:
+            if event.key == K_LEFT or event.key == K_a:
                 moving_left = False
-            if event.key == K_UP:
+            if event.key == K_UP or event.key == K_w:
                 moving_up = False
-            if event.key == K_DOWN:
+            if event.key == K_DOWN or event.key == K_s:
                 moving_down = False
 
     surf = pygame.transform.scale(display,WINDOW_SIZE)
