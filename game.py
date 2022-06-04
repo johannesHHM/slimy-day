@@ -68,21 +68,13 @@ while True:
     for enemy in enemy_list[:]:
         movement = [0,0]
         p_center = player.get_center()
+        #other_enemies = enemy_list
+        #other_enemies.remove(enemy)
 
-        collision = {
-            "RIGHT": False,
-            "LEFT": False,
-            "TOP": False,
-            "BOTTOM": False
-        }
-        collide_list = []
+        other_enemies = []
         for enemy_else in enemy_list:
             if enemy != enemy_else:
-                if enemy_else.rect.colliderect(enemy.rect):
-                    collide_list.append(enemy_else)
-
-        for enemy_collide in collide_list[:]:
-            t=0
+                other_enemies.append((enemy_else))
 
         if(p_center[0] + 1 > enemy.center()[0]):
             movement[0] = movement[0] + enemy.speed
@@ -93,10 +85,7 @@ while True:
         if(p_center[1] + 1 > enemy.center()[1]):
             movement[1] = movement[1] + enemy.speed
 
-        if len(collide_list) > 0:
-            movement = [0,0]
-
-        enemy.move(movement)
+        enemy.move(movement,other_enemies)
         pygame.draw.rect(display, enemy.colour, enemy.rect)
 
     for event in pygame.event.get():
