@@ -5,6 +5,7 @@ from pygame.locals import *
 clock = pygame.time.Clock()
 
 pygame.init()
+font = pygame.font.SysFont(None, 14)
 
 WINDOW_SIZE = (720, 720)
 zoom = 2
@@ -20,6 +21,8 @@ moving_right = False
 moving_up = False
 moving_down = False
 
+debug_mode = False
+
 player = player.Player(20,20)
 color = color.Color((170,0,170))
 
@@ -30,6 +33,9 @@ enemy_list.append(enemies.Slug(100,0))
 enemy_list.append(enemies.Slug(100,100))
 
 enemy_list.append(enemies.Rat(100,100))
+enemy_list.append(enemies.Rat(200,200))
+for i in range(10):
+    enemy_list.append(enemies.Slug(200,200))
 
 enemy_list.append(enemies.Ogre(300,300))
 
@@ -60,10 +66,14 @@ while True:
     player.angle = cursor_player_angle(player.center(),mouse_pos) * -1
     rotimage = pygame.transform.rotate(player.sprite,player.angle)
     rotimage.set_colorkey(color.colorkey)
-    rect = rotimage.get_rect(center=player.center())
 
-    display.blit(rotimage,rect)
-    #pygame.draw.rect(display, (0,0,255), pygame.Rect(player.get_center(),(1,1)))
+    p_center = player.center()
+    p_center = (p_center[0]-int(rotimage.get_width()/2),p_center[1]-int(rotimage.get_height()/2))
+    print(int(rotimage.get_width()/2))
+
+    display.blit(rotimage,p_center)
+    pygame.draw.rect(display, color.red, player.rect)
+    pygame.draw.rect(display, (0,0,255), pygame.Rect(player.center(),(1,1)))
 
     for enemy in enemy_list[:]:
         movement = enemy.movement(player.center())
@@ -71,7 +81,18 @@ while True:
         other_enemies.remove(enemy)
 
         enemy.move(movement,other_enemies)
-        pygame.draw.rect(display, enemy.colour, enemy.rect)
+
+        if enemy.rect.colliderect(player.rect):
+            print("DIED TO ", enemy)
+
+        if hasattr(enemy, "sprite"):
+            display.blit(enemy.sprite,enemy.rect)
+        else:
+            pygame.draw.rect(display, enemy.colour, enemy.rect)
+
+    if debug_mode:
+        render_FPS = font.render("FPS: " + str(round(clock.get_fps(), 2)), True, (255,0,0))
+        display.blit(render_FPS, (1, 1))
 
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -87,6 +108,8 @@ while True:
                 moving_up = True
             if event.key == K_DOWN or event.key == K_s:
                 moving_down = True
+            if event.key == K_p:
+                debug_mode = not debug_mode
 
         if event.type == KEYUP:
             if event.key == K_RIGHT or event.key == K_d:

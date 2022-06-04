@@ -6,10 +6,11 @@ class Player:
         self.x = x
         self.y = y
         self.speed = 3
-        self.size = (20,20)
+        self.size = (10,10)
         self.rect = pygame.Rect((x,y),self.size)
         self.colour = (255,0,0)
         self.sprite = pygame.image.load("arrow.png")
+        self.sprite_offset = (-5,-5)
         self.angle = 0
 
     def move(self,x,y):
