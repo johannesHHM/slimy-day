@@ -69,11 +69,10 @@ while True:
 
     p_center = player.center()
     p_center = (p_center[0]-int(rotimage.get_width()/2),p_center[1]-int(rotimage.get_height()/2))
-    print(int(rotimage.get_width()/2))
 
     display.blit(rotimage,p_center)
-    pygame.draw.rect(display, color.red, player.rect)
-    pygame.draw.rect(display, (0,0,255), pygame.Rect(player.center(),(1,1)))
+    #pygame.draw.rect(display, color.red, player.rect)
+    #pygame.draw.rect(display, (0,0,255), pygame.Rect(player.center(),(1,1)))
 
     for enemy in enemy_list[:]:
         movement = enemy.movement(player.center())

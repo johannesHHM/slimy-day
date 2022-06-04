@@ -10,7 +10,6 @@ class Player:
         self.rect = pygame.Rect((x,y),self.size)
         self.colour = (255,0,0)
         self.sprite = pygame.image.load("arrow.png")
-        self.sprite_offset = (-5,-5)
         self.angle = 0
 
     def move(self,x,y):
