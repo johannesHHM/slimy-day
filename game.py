@@ -25,18 +25,18 @@ color = color.Color((170,0,170))
 
 enemy_list = []
 
-enemy_list.append(enemies.Slug(0, 0))
-enemy_list.append(enemies.Slug(100, 0))
-enemy_list.append(enemies.Slug(100, 100))
+enemy_list.append(enemies.Slug(0,0))
+enemy_list.append(enemies.Slug(100,0))
+enemy_list.append(enemies.Slug(100,100))
 
-enemy_list.append(enemies.Rat(200, 100))
+enemy_list.append(enemies.Rat(100,100))
+
+enemy_list.append(enemies.Ogre(300,300))
 
 def cursor_player_angle(player_pos,cursor_pos):
     myradians = math.atan2(cursor_pos[1]-player_pos[1], cursor_pos[0]-player_pos[0])
     mydegrees = math.degrees(myradians)
     return mydegrees
-
-print(cursor_player_angle((20,20),(20,20)))
 
 while True:
     display.fill(color.white)
@@ -44,46 +44,31 @@ while True:
     movement = [0,0]
 
     if (moving_right):
-        movement[0] = movement[0] + 2
+        movement[0] = movement[0] + player.speed
     if (moving_left):
-        movement[0] = movement[0] - 2
+        movement[0] = movement[0] - player.speed
     if (moving_up):
-        movement[1] = movement[1] - 2
+        movement[1] = movement[1] - player.speed
     if (moving_down):
-        movement[1] = movement[1] + 2
+        movement[1] = movement[1] + player.speed
 
     player.move(movement[0],movement[1])
 
     x, y = pygame.mouse.get_pos()
     mouse_pos = (x//zoom,y//zoom)
 
-    player.angle = cursor_player_angle(player.get_center(),mouse_pos) * -1
+    player.angle = cursor_player_angle(player.center(),mouse_pos) * -1
     rotimage = pygame.transform.rotate(player.sprite,player.angle)
     rotimage.set_colorkey(color.colorkey)
-    rect = rotimage.get_rect(center=player.get_center())
+    rect = rotimage.get_rect(center=player.center())
 
     display.blit(rotimage,rect)
     #pygame.draw.rect(display, (0,0,255), pygame.Rect(player.get_center(),(1,1)))
 
     for enemy in enemy_list[:]:
-        movement = [0,0]
-        p_center = player.get_center()
-        #other_enemies = enemy_list
-        #other_enemies.remove(enemy)
-
-        other_enemies = []
-        for enemy_else in enemy_list:
-            if enemy != enemy_else:
-                other_enemies.append((enemy_else))
-
-        if(p_center[0] + 1 > enemy.center()[0]):
-            movement[0] = movement[0] + enemy.speed
-        if(p_center[0] - 1 < enemy.center()[0]):
-            movement[0] = movement[0] - enemy.speed
-        if(p_center[1] - 1 < enemy.center()[1]):
-            movement[1] = movement[1] - enemy.speed
-        if(p_center[1] + 1 > enemy.center()[1]):
-            movement[1] = movement[1] + enemy.speed
+        movement = enemy.movement(player.center())
+        other_enemies = enemy_list.copy()
+        other_enemies.remove(enemy)
 
         enemy.move(movement,other_enemies)
         pygame.draw.rect(display, enemy.colour, enemy.rect)

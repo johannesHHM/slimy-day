@@ -1,26 +1,33 @@
-import pygame
+import pygame, color, math
+
+color = color.Color((170,0,170))
 
 class Enemy:
-    def __init__(self,health,x,y,speed,size,color):
+    def __init__(self,health,x,y,speed,size,default_color):
         self.health = health
         self.x = x
         self.y = y
         self.speed = speed
         self.size = size
         self.rect = pygame.Rect((x,y),size)
-        self.colour = color
+        self.colour = default_color
 
     def collisions(self,object_list):
         collision_list = []
         for object in object_list:
             if object.rect.colliderect(self.rect):
                 collision_list.append(object)
-        print(len(collision_list))
         return collision_list
 
     def center(self):
-        center = (self.x + self.size[0]//2,self.y + self.size[1]//2)
+        center = (self.x + int(self.size[0]/2),self.y + int(self.size[1]/2))
         return center
+
+    def movement(self,player_center):
+        radian = math.atan2(self.center()[1] - player_center[1],self.center()[0] - player_center[0])
+        y = math.sin(radian) * -self.speed
+        x = math.cos(radian) * -self.speed
+        return (x,y)
 
     def move(self,movement,enemy_list):
         collision_types = {'top':False,'bottom':False,'right':False,'left':False}
@@ -52,8 +59,12 @@ class Enemy:
 
 class Slug(Enemy):
     def __init__(self,x,y):
-        super().__init__(3,x,y,0.5,(13,13),(0,255,0))
+        super().__init__(3,x,y,0.5,(13,13),color.green)
 
 class Rat(Enemy):
     def __init__(self,x,y):
-        super().__init__(3,x,y,1,(11,11),(100,100,100))
+        super().__init__(2,x,y,1.5,(11,11),color.gray)
+
+class Ogre(Enemy):
+    def __init__(self,x,y):
+        super().__init__(5,x,y,0.4,(30,30),color.brown)

@@ -5,7 +5,7 @@ class Player:
         self.health = 3
         self.x = x
         self.y = y
-        self.speed = 2
+        self.speed = 3
         self.size = (20,20)
         self.rect = pygame.Rect((x,y),self.size)
         self.colour = (255,0,0)
@@ -17,6 +17,6 @@ class Player:
         self.y = self.y + y
         self.rect = pygame.Rect((self.x,self.y),self.size)
 
-    def get_center(self):
-        center = (self.x + self.size[0]//2,self.y + self.size[1]//2)
+    def center(self):
+        center = (self.x + int(self.size[0]/2),self.y + int(self.size[1]/2))
         return center
