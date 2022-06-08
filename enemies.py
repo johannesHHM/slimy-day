@@ -11,6 +11,7 @@ class Enemy:
         self.size = size
         self.rect = pygame.Rect((x,y),size)
         self.colour = default_color
+        self.flip = False
 
     def collisions(self,object_list):
         collision_list = []
@@ -61,6 +62,12 @@ class Slug(Enemy):
     def __init__(self,x,y):
         super().__init__(3,x,y,0.5,(20,20),color.green)
         self.sprite = pygame.image.load("slime.png")
+        self.sprite.set_colorkey(color.colorkey)
+
+class Slime(Enemy):
+    def __init__(self,x,y):
+        super().__init__(3,x,y,0.5,(13,11),color.green)
+        self.sprite = pygame.image.load("slime2.png")
         self.sprite.set_colorkey(color.colorkey)
 
 class Rat(Enemy):

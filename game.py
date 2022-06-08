@@ -6,9 +6,10 @@ clock = pygame.time.Clock()
 
 pygame.init()
 font = pygame.font.SysFont(None, 14)
+gui_font = pygame.font.SysFont(None, 30)
 
-WINDOW_SIZE = (720, 720)
-zoom = 2
+WINDOW_SIZE = (1028, 1028)
+zoom = 4
 
 DISPLAY_SIZE = (WINDOW_SIZE[0] // zoom, WINDOW_SIZE[1] // zoom)
 print ('x: ' + str(DISPLAY_SIZE[0]) + ' y: ' + str(DISPLAY_SIZE[1]))
@@ -23,21 +24,34 @@ moving_down = False
 
 debug_mode = False
 
-player = player.Player(20,20)
+player = player.Player(0,0)
 color = color.Color((170,0,170))
+BLINK_RATE = 5
 
 enemy_list = []
 
-enemy_list.append(enemies.Slug(0,0))
-enemy_list.append(enemies.Slug(100,0))
-enemy_list.append(enemies.Slug(100,100))
+#enemy_list.append(enemies.Slug(100,0))
+#enemy_list.append(enemies.Slug(100,100))
 
-enemy_list.append(enemies.Rat(100,100))
-enemy_list.append(enemies.Rat(200,200))
+#enemy_list.append(enemies.Rat(100,100))
+#enemy_list.append(enemies.Rat(200,200))
+
 for i in range(10):
-    enemy_list.append(enemies.Slug(200,200))
+    enemy_list.append(enemies.Slime(200,200))
+#for i in range(10):
+#    enemy_list.append(enemies.Rat(200,0))
 
-enemy_list.append(enemies.Ogre(300,300))
+#enemy_list.append(enemies.Ogre(300,300))
+
+heart_image = pygame.image.load("heart.png")
+heart_image.set_colorkey(color.colorkey)
+
+three_image = pygame.image.load("images/3.png")
+three_image.set_colorkey(color.colorkey)
+two_image = pygame.image.load("images/2.png")
+two_image.set_colorkey(color.colorkey)
+one_image = pygame.image.load("images/1.png")
+one_image.set_colorkey(color.colorkey)
 
 def cursor_player_angle(player_pos,cursor_pos):
     myradians = math.atan2(cursor_pos[1]-player_pos[1], cursor_pos[0]-player_pos[0])
@@ -45,10 +59,20 @@ def cursor_player_angle(player_pos,cursor_pos):
     return mydegrees
 
 while True:
-    display.fill(color.white)
+    display.fill(color.pastel)
+
+    display.blit(heart_image,(315,5))
+    if player.health == 3:
+        display.blit(three_image,(335,4))
+    elif player.health == 2:
+        display.blit(two_image,(335,4))
+    elif player.health == 1:
+        display.blit(one_image,(335,4))
+
+    if player.invinc > 0:
+        player.invinc += -1
 
     movement = [0,0]
-
     if (moving_right):
         movement[0] = movement[0] + player.speed
     if (moving_left):
@@ -70,7 +94,14 @@ while True:
     p_center = player.center()
     p_center = (p_center[0]-int(rotimage.get_width()/2),p_center[1]-int(rotimage.get_height()/2))
 
-    display.blit(rotimage,p_center)
+    if player.invinc > 0:
+        if BLINK_RATE > 0:
+            display.blit(rotimage,p_center)
+        BLINK_RATE += -1
+        if BLINK_RATE <= -5:
+            BLINK_RATE = 5
+    else:
+        display.blit(rotimage,p_center)
     #pygame.draw.rect(display, color.red, player.rect)
     #pygame.draw.rect(display, (0,0,255), pygame.Rect(player.center(),(1,1)))
 
@@ -79,13 +110,23 @@ while True:
         other_enemies = enemy_list.copy()
         other_enemies.remove(enemy)
 
+        if movement[0] < 0:
+            enemy.flip = True
+        else:
+            enemy.flip = False
+
         enemy.move(movement,other_enemies)
 
-        if enemy.rect.colliderect(player.rect):
+        if enemy.rect.colliderect(player.rect) and player.invinc <= 0:
             print("DIED TO ", enemy)
+            player.health += -1
+            player.invinc = 80
 
         if hasattr(enemy, "sprite"):
-            display.blit(enemy.sprite,enemy.rect)
+            if enemy.flip:
+                display.blit(enemy.sprite,enemy.rect)
+            else:
+                display.blit(pygame.transform.flip(enemy.sprite, True, False),enemy.rect)
         else:
             pygame.draw.rect(display, enemy.colour, enemy.rect)
 
@@ -109,6 +150,8 @@ while True:
                 moving_down = True
             if event.key == K_p:
                 debug_mode = not debug_mode
+            if event.key == K_SPACE:
+                player.health += -1
 
         if event.type == KEYUP:
             if event.key == K_RIGHT or event.key == K_d:
