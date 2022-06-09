@@ -3,7 +3,7 @@ import pygame, color, math
 color = color.Color((170,0,170))
 
 class Enemy:
-    def __init__(self,health,x,y,speed,size,default_color):
+    def __init__(self,health,x,y,speed,size,default_color,offput):
         self.health = health
         self.x = x
         self.y = y
@@ -12,6 +12,7 @@ class Enemy:
         self.rect = pygame.Rect((x,y),size)
         self.colour = default_color
         self.flip = False
+        self.offput = offput
 
     def collisions(self,object_list):
         collision_list = []
@@ -32,7 +33,12 @@ class Enemy:
 
     def move(self,movement,enemy_list):
         collision_types = {'top':False,'bottom':False,'right':False,'left':False}
+        enemy_hit_list = self.collisions(enemy_list)
+        # if len(enemy_hit_list) > 0:
+        #     return collision_types
+        # print(enemy_hit_list)
         #Collisions in x direction
+        last_pos = (self.x,self.y)
         self.x += movement[0]
         self.rect.x = int(self.x)
         enemy_hit_list = self.collisions(enemy_list)
@@ -56,28 +62,36 @@ class Enemy:
                 self.rect.top = enemy.rect.bottom
                 collision_types['top'] = True
             self.y = self.rect.y
+        enemy_hit_list = self.collisions(enemy_list)
+        if len(enemy_hit_list) > 0:
+            self.x = last_pos[0]
+            self.y = last_pos[1]
+            self.rect.x = last_pos[0]
+            self.rect.y = last_pos[1]
         return collision_types
 
-class Slug(Enemy):
-    def __init__(self,x,y):
-        super().__init__(3,x,y,0.5,(20,20),color.green)
-        self.sprite = pygame.image.load("slime.png")
-        self.sprite.set_colorkey(color.colorkey)
+    def blit(self,display):
+        sprite = self.sprite
+        if self.flip:
+            sprite = pygame.transform.flip(sprite, True, False)
+            sprite.set_colorkey(color.colorkey)
+        display.blit(sprite,(self.x + self.offput[0],self.y + self.offput[1]))
+        #pygame.draw.rect(display,color.red,self.rect)
 
 class Slime(Enemy):
     def __init__(self,x,y):
-        super().__init__(3,x,y,0.5,(13,11),color.green)
-        self.sprite = pygame.image.load("slime2.png")
+        super().__init__(3,x,y,0.5,(13,11),color.green,(0,0))
+        self.sprite = pygame.image.load("slime.png")
         self.sprite.set_colorkey(color.colorkey)
 
 class Rat(Enemy):
     def __init__(self,x,y):
-        super().__init__(2,x,y,1.5,(15,15),color.gray)
+        super().__init__(2,x,y,1.5,(10,9),color.gray,(-3,-2))
         self.sprite = pygame.image.load("rat.png")
         self.sprite.set_colorkey(color.colorkey)
 
 class Ogre(Enemy):
     def __init__(self,x,y):
-        super().__init__(5,x,y,0.4,(50,50),color.brown)
+        super().__init__(7,x,y,0.4,(25,29),color.brown,(0,0))
         self.sprite = pygame.image.load("ogre.png")
         self.sprite.set_colorkey(color.colorkey)

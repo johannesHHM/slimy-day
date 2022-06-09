@@ -8,7 +8,7 @@ pygame.init()
 font = pygame.font.SysFont(None, 14)
 gui_font = pygame.font.SysFont(None, 30)
 
-WINDOW_SIZE = (1028, 1028)
+WINDOW_SIZE = (1000,1000)
 zoom = 4
 
 DISPLAY_SIZE = (WINDOW_SIZE[0] // zoom, WINDOW_SIZE[1] // zoom)
@@ -30,18 +30,12 @@ BLINK_RATE = 5
 
 enemy_list = []
 
-#enemy_list.append(enemies.Slug(100,0))
-#enemy_list.append(enemies.Slug(100,100))
+for i in range(50):
+    enemy_list.append(enemies.Slime(100,200))
+for i in range(20):
+    enemy_list.append(enemies.Rat(200,0+i*10))
 
-#enemy_list.append(enemies.Rat(100,100))
-#enemy_list.append(enemies.Rat(200,200))
-
-for i in range(10):
-    enemy_list.append(enemies.Slime(200,200))
-#for i in range(10):
-#    enemy_list.append(enemies.Rat(200,0))
-
-#enemy_list.append(enemies.Ogre(300,300))
+enemy_list.append(enemies.Ogre(200,200))
 
 heart_image = pygame.image.load("heart.png")
 heart_image.set_colorkey(color.colorkey)
@@ -61,13 +55,13 @@ def cursor_player_angle(player_pos,cursor_pos):
 while True:
     display.fill(color.pastel)
 
-    display.blit(heart_image,(315,5))
+    display.blit(heart_image,(212,2))
     if player.health == 3:
-        display.blit(three_image,(335,4))
+        display.blit(three_image,(232,2))
     elif player.health == 2:
-        display.blit(two_image,(335,4))
+        display.blit(two_image,(232,2))
     elif player.health == 1:
-        display.blit(one_image,(335,4))
+        display.blit(one_image,(232,2))
 
     if player.invinc > 0:
         player.invinc += -1
@@ -111,22 +105,25 @@ while True:
         other_enemies.remove(enemy)
 
         if movement[0] < 0:
-            enemy.flip = True
-        else:
             enemy.flip = False
-
+        else:
+            enemy.flip = True
         enemy.move(movement,other_enemies)
 
         if enemy.rect.colliderect(player.rect) and player.invinc <= 0:
-            print("DIED TO ", enemy)
+            #print("DIED TO ", enemy)
             player.health += -1
             player.invinc = 80
 
         if hasattr(enemy, "sprite"):
-            if enemy.flip:
-                display.blit(enemy.sprite,enemy.rect)
-            else:
-                display.blit(pygame.transform.flip(enemy.sprite, True, False),enemy.rect)
+            # if enemy.flip:
+            #     display.blit(enemy.sprite,enemy.rect)
+            # else:
+            #     sprite = pygame.transform.flip(enemy.sprite, True, False)
+            #     sprite.set_colorkey(color.colorkey)
+            #     display.blit(sprite,enemy.rect)
+            enemy.blit(display)
+
         else:
             pygame.draw.rect(display, enemy.colour, enemy.rect)
 
@@ -151,7 +148,7 @@ while True:
             if event.key == K_p:
                 debug_mode = not debug_mode
             if event.key == K_SPACE:
-                player.health += -1
+                pass
 
         if event.type == KEYUP:
             if event.key == K_RIGHT or event.key == K_d:
