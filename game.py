@@ -1,5 +1,5 @@
 import pygame, sys, math
-import color, player, enemies
+import color, player, enemies, terrain
 from pygame.locals import *
 
 clock = pygame.time.Clock()
@@ -8,8 +8,8 @@ pygame.init()
 font = pygame.font.SysFont(None, 14)
 gui_font = pygame.font.SysFont(None, 30)
 
-WINDOW_SIZE = (1000,1000)
-zoom = 4
+WINDOW_SIZE = (900,900)
+zoom = 3
 
 DISPLAY_SIZE = (WINDOW_SIZE[0] // zoom, WINDOW_SIZE[1] // zoom)
 print ('x: ' + str(DISPLAY_SIZE[0]) + ' y: ' + str(DISPLAY_SIZE[1]))
@@ -29,13 +29,7 @@ color = color.Color((170,0,170))
 BLINK_RATE = 5
 
 enemy_list = []
-
-for i in range(50):
-    enemy_list.append(enemies.Slime(100,200))
-for i in range(20):
-    enemy_list.append(enemies.Rat(200,0+i*10))
-
-enemy_list.append(enemies.Ogre(200,200))
+terrain_list = []
 
 heart_image = pygame.image.load("images/heart.png")
 heart_image.set_colorkey(color.colorkey)
@@ -52,8 +46,37 @@ def cursor_player_angle(player_pos,cursor_pos):
     mydegrees = math.degrees(myradians)
     return mydegrees
 
+def generate_border(width):
+    border_terrain = []
+    border_terrain.append(terrain.Terrain(0,0,(width,DISPLAY_SIZE[1]),color.gray))
+    border_terrain.append(terrain.Terrain(0,0,(DISPLAY_SIZE[0],width),color.gray))
+    border_terrain.append(terrain.Terrain(DISPLAY_SIZE[0]-width,0,(width,DISPLAY_SIZE[1]),color.gray))
+    border_terrain.append(terrain.Terrain(0,DISPLAY_SIZE[1]-width,(DISPLAY_SIZE[0],width),color.gray))
+    return border_terrain
+
+def spawn_mobs(enemy_list):
+    for i in range(20):
+        enemy_list.append(enemies.Slime(100,200))
+    for i in range(10):
+        enemy_list.append(enemies.Rat(200,0+i*10))
+    enemy_list.append(enemies.Ogre(200,200))
+
+def spawn_terrain(terrain_list):
+    terrain_list.extend(generate_border(5))
+    terrain_list.append(terrain.Terrain(40,20,(20,100),color.black))
+    terrain_list.append(terrain.Terrain(200,60,(30,50),color.black))
+    terrain_list.append(terrain.Water(20,200,(100,30)))
+
+spawn_mobs(enemy_list)
+spawn_terrain(terrain_list)
+
 while True:
     display.fill(color.pastel)
+
+    #-------< Terrain Handling >-------#
+
+    for terrain in terrain_list[:]:
+        pygame.draw.rect(display, terrain.color, terrain.rect)
 
     display.blit(heart_image,(212,2))
     if player.health == 3:
@@ -62,6 +85,8 @@ while True:
         display.blit(two_image,(232,2))
     elif player.health == 1:
         display.blit(one_image,(232,2))
+
+    #-------< Player Handling >-------#
 
     if player.invinc > 0:
         player.invinc += -1
@@ -99,9 +124,12 @@ while True:
     #pygame.draw.rect(display, color.red, player.rect)
     #pygame.draw.rect(display, (0,0,255), pygame.Rect(player.center(),(1,1)))
 
+    #-------< Enemy Handling >-------#
+
     for enemy in enemy_list[:]:
         movement = enemy.movement(player.center())
         other_enemies = enemy_list.copy()
+        other_enemies.extend(terrain_list)
         other_enemies.remove(enemy)
 
         if movement[0] < 0:
@@ -111,21 +139,13 @@ while True:
         enemy.move(movement,other_enemies)
 
         if enemy.rect.colliderect(player.rect) and player.invinc <= 0:
-            #print("DIED TO ", enemy)
             player.health += -1
             player.invinc = 80
 
         if hasattr(enemy, "sprite"):
-            # if enemy.flip:
-            #     display.blit(enemy.sprite,enemy.rect)
-            # else:
-            #     sprite = pygame.transform.flip(enemy.sprite, True, False)
-            #     sprite.set_colorkey(color.colorkey)
-            #     display.blit(sprite,enemy.rect)
             enemy.blit(display)
-
         else:
-            pygame.draw.rect(display, enemy.colour, enemy.rect)
+            pygame.draw.rect(display, enemy.color, enemy.rect)
 
     if debug_mode:
         render_FPS = font.render("FPS: " + str(round(clock.get_fps(), 2)), True, (255,0,0))

@@ -10,7 +10,7 @@ class Enemy:
         self.speed = speed
         self.size = size
         self.rect = pygame.Rect((x,y),size)
-        self.colour = default_color
+        self.color = default_color
         self.flip = False
         self.offput = offput
 
@@ -76,7 +76,7 @@ class Enemy:
             sprite = pygame.transform.flip(sprite, True, False)
             sprite.set_colorkey(color.colorkey)
         display.blit(sprite,(self.x + self.offput[0],self.y + self.offput[1]))
-        #pygame.draw.rect(display,color.red,self.rect)
+        #pygame.draw.rect(display,self.color,self.rect)
 
 class Slime(Enemy):
     def __init__(self,x,y):
