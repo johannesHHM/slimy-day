@@ -81,17 +81,17 @@ class Enemy:
 class Slime(Enemy):
     def __init__(self,x,y):
         super().__init__(3,x,y,0.5,(13,11),color.green,(0,0))
-        self.sprite = pygame.image.load("slime.png")
+        self.sprite = pygame.image.load("images/slime.png")
         self.sprite.set_colorkey(color.colorkey)
 
 class Rat(Enemy):
     def __init__(self,x,y):
         super().__init__(2,x,y,1.5,(10,9),color.gray,(-3,-2))
-        self.sprite = pygame.image.load("rat.png")
+        self.sprite = pygame.image.load("images/rat.png")
         self.sprite.set_colorkey(color.colorkey)
 
 class Ogre(Enemy):
     def __init__(self,x,y):
         super().__init__(7,x,y,0.4,(25,29),color.brown,(0,0))
-        self.sprite = pygame.image.load("ogre.png")
+        self.sprite = pygame.image.load("images/ogre.png")
         self.sprite.set_colorkey(color.colorkey)

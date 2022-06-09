@@ -37,7 +37,7 @@ for i in range(20):
 
 enemy_list.append(enemies.Ogre(200,200))
 
-heart_image = pygame.image.load("heart.png")
+heart_image = pygame.image.load("images/heart.png")
 heart_image.set_colorkey(color.colorkey)
 
 three_image = pygame.image.load("images/3.png")

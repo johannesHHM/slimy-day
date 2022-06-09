@@ -9,7 +9,7 @@ class Player:
         self.size = (11,11)
         self.rect = pygame.Rect((x,y),self.size)
         self.colour = (255,0,0)
-        self.sprite = pygame.image.load("player.png")
+        self.sprite = pygame.image.load("images/player.png")
         self.angle = 0
         self.invinc = 0
 
