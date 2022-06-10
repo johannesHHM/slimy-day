@@ -41,7 +41,7 @@ class Enemy:
         return (x,y)
 
     def move(self,movement,objects_list):
-        collision_types = {'top':False,'bottom':False,'right':False,'left':False}
+        collision_types = {'top':False,'bottom':False,'right':False,'left':False,'stationary':False}
         object_hit_list = self.collisions(objects_list)
         #Collisions in x direction
         last_pos = (self.x,self.y)
@@ -74,6 +74,8 @@ class Enemy:
             self.y = last_pos[1]
             self.rect.x = last_pos[0]
             self.rect.y = last_pos[1]
+        if int(last_pos[0]) == int(self.x) and int(last_pos[1]) == int(self.y):
+            collision_types['stationary'] = True
         return collision_types
 
     def blit(self,display):
@@ -107,7 +109,7 @@ class Enemy:
 class Slime(Enemy):
     def __init__(self,x,y):
         super().__init__(3,x,y,0.5,(13,11),color.green,(0,0))
-        self.sprite = pygame.image.load("images/slime.png")
+        self.sprite = pygame.image.load("images/slime/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
 
         self.animation_database = {
@@ -120,7 +122,7 @@ class Slime(Enemy):
 class Rat(Enemy):
     def __init__(self,x,y):
         super().__init__(2,x,y,1.5,(10,9),color.gray,(-3,-2))
-        self.sprite = pygame.image.load("images/rat.png")
+        self.sprite = pygame.image.load("images/rat/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
 
         self.animation_database = {
@@ -133,7 +135,7 @@ class Rat(Enemy):
 class Ogre(Enemy):
     def __init__(self,x,y):
         super().__init__(7,x,y,0.4,(25,29),color.brown,(0,0))
-        self.sprite = pygame.image.load("images/ogre.png")
+        self.sprite = pygame.image.load("images/ogre/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
 
         self.animation_database = {

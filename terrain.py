@@ -13,5 +13,5 @@ class Terrain:
 class Water(Terrain):
     def __init__(self,x,y,size):
         super().__init__(x,y,size,(color.chineseblue))
-        #self.sprite = pygame.image.load("images/slime.png")
+        #self.sprite = pygame.image.load("")
         #self.sprite.set_colorkey(color.colorkey)

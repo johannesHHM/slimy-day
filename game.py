@@ -34,11 +34,11 @@ terrain_list = []
 heart_image = pygame.image.load("images/heart.png")
 heart_image.set_colorkey(color.colorkey)
 
-three_image = pygame.image.load("images/3.png")
+three_image = pygame.image.load("images/numbers/3.png")
 three_image.set_colorkey(color.colorkey)
-two_image = pygame.image.load("images/2.png")
+two_image = pygame.image.load("images/numbers/2.png")
 two_image.set_colorkey(color.colorkey)
-one_image = pygame.image.load("images/1.png")
+one_image = pygame.image.load("images/numbers/1.png")
 one_image.set_colorkey(color.colorkey)
 
 def cursor_player_angle(player_pos,cursor_pos):
@@ -82,13 +82,13 @@ while True:
 
     #-------< Heath Bar >-------#
 
-    display.blit(heart_image,(212,2))
+    display.blit(heart_image,(262,2))
     if player.health == 3:
-        display.blit(three_image,(232,2))
+        display.blit(three_image,(282,2))
     elif player.health == 2:
-        display.blit(two_image,(232,2))
+        display.blit(two_image,(282,2))
     elif player.health == 1:
-        display.blit(one_image,(232,2))
+        display.blit(one_image,(282,2))
 
     #-------< Player Handling >-------#
 
@@ -140,7 +140,7 @@ while True:
             enemy.flip = False
         else:
             enemy.flip = True
-        enemy.move(movement,other_objects)
+        move_data = enemy.move(movement,other_objects)
 
         if enemy.rect.colliderect(player.rect) and player.invinc <= 0:
             player.health += -1
@@ -156,6 +156,8 @@ while True:
                 enemy.action("idle")
             else:
                 enemy.action("movement")
+            if move_data["stationary"]:
+                enemy.action("idle")
 
     if debug_mode:
         render_FPS = font.render("FPS: " + str(round(clock.get_fps(), 2)), True, (255,0,0))
