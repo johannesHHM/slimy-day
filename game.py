@@ -24,7 +24,7 @@ moving_down = False
 
 debug_mode = False
 
-player = player.Player(0,0)
+player = player.Player(10,10)
 color = color.Color((170,0,170))
 BLINK_RATE = 5
 
@@ -56,10 +56,12 @@ def generate_border(width):
 
 def spawn_mobs(enemy_list):
     for i in range(20):
-        enemy_list.append(enemies.Slime(100,200))
+        enemy_list.append(enemies.Slime(110+i*10,200))
     for i in range(10):
         enemy_list.append(enemies.Rat(200,0+i*10))
+    enemy_list.append(enemies.Rat(200,20))
     enemy_list.append(enemies.Ogre(200,200))
+    enemy_list.append(enemies.Ogre(250,220))
 
 def spawn_terrain(terrain_list):
     terrain_list.extend(generate_border(5))
@@ -78,6 +80,8 @@ while True:
     for terrain in terrain_list[:]:
         pygame.draw.rect(display, terrain.color, terrain.rect)
 
+    #-------< Heath Bar >-------#
+
     display.blit(heart_image,(212,2))
     if player.health == 3:
         display.blit(three_image,(232,2))
@@ -92,19 +96,19 @@ while True:
         player.invinc += -1
 
     movement = [0,0]
-    if (moving_right):
+    if moving_right:
         movement[0] = movement[0] + player.speed
-    if (moving_left):
+    if moving_left:
         movement[0] = movement[0] - player.speed
-    if (moving_up):
+    if moving_up:
         movement[1] = movement[1] - player.speed
-    if (moving_down):
+    if moving_down:
         movement[1] = movement[1] + player.speed
 
-    player.move(movement[0],movement[1])
+    player.move(movement,terrain_list)
 
-    x, y = pygame.mouse.get_pos()
-    mouse_pos = (x//zoom,y//zoom)
+    mouse_x, mouse_y = pygame.mouse.get_pos()
+    mouse_pos = (mouse_x//zoom,mouse_y//zoom)
 
     player.angle = cursor_player_angle(player.center(),mouse_pos) * -1
     rotimage = pygame.transform.rotate(player.sprite,player.angle)
@@ -128,24 +132,30 @@ while True:
 
     for enemy in enemy_list[:]:
         movement = enemy.movement(player.center())
-        other_enemies = enemy_list.copy()
-        other_enemies.extend(terrain_list)
-        other_enemies.remove(enemy)
+        other_objects = enemy_list.copy()
+        other_objects.extend(terrain_list)
+        other_objects.remove(enemy)
 
         if movement[0] < 0:
             enemy.flip = False
         else:
             enemy.flip = True
-        enemy.move(movement,other_enemies)
+        enemy.move(movement,other_objects)
 
         if enemy.rect.colliderect(player.rect) and player.invinc <= 0:
             player.health += -1
             player.invinc = 80
-
         if hasattr(enemy, "sprite"):
             enemy.blit(display)
         else:
             pygame.draw.rect(display, enemy.color, enemy.rect)
+
+        if hasattr(enemy, "animation_ticker"):
+            enemy.tick()
+            if debug_mode:
+                enemy.action("idle")
+            else:
+                enemy.action("movement")
 
     if debug_mode:
         render_FPS = font.render("FPS: " + str(round(clock.get_fps(), 2)), True, (255,0,0))
@@ -168,7 +178,7 @@ while True:
             if event.key == K_p:
                 debug_mode = not debug_mode
             if event.key == K_SPACE:
-                pass
+                enemy_list.append(enemies.Rat(mouse_pos[0], mouse_pos[1]))
 
         if event.type == KEYUP:
             if event.key == K_RIGHT or event.key == K_d:
