@@ -1,6 +1,7 @@
-import pygame, sys, math
+import pygame, sys, math, random
 import color, player, enemies, terrain, objects
 from pygame.locals import *
+from random import randrange
 
 clock = pygame.time.Clock()
 
@@ -66,16 +67,18 @@ def spawn_terrain(terrain_list):
     #terrain_list.append(terrain.Terrain(40,20,(20,100),color.black))
     #terrain_list.append(terrain.Terrain(200,60,(30,50),color.black))
     #terrain_list.append(terrain.Water(20,200,(100,30)))
-    terrain_list.append(terrain.Tree(50,50))
-    terrain_list.append(terrain.Tree(170,80))
-    terrain_list.append(terrain.Tree(60,140))
+    terrain_list.append(terrain.Tree(50,50,particle_list))
+    terrain_list.append(terrain.Tree1(170,80,particle_list))
+    terrain_list.append(terrain.Tree(60,140,particle_list))
     pass
 
 def spawn_test_particles(particle_list):
-    particle_list.append(objects.Particle(10,10))
+    # particle_list.append(objects.Particle(10,10,100,70,1,1,(0.1,0.1)))
+    pass
 
 spawn_mobs(enemy_list)
 spawn_terrain(terrain_list)
+spawn_test_particles(particle_list)
 
 sine_value = 0
 
@@ -91,6 +94,9 @@ while True:
 
     for terrain in terrain_list[:]:
         terrain.tick()
+        if hasattr(terrain,"particle_spawner"):
+            if randrange(0,29) == 0:
+                terrain.particle_spawner.spawn_particle_random(randrange(40,80))
         if hasattr(terrain, "sprite"):
             terrain.blit(display)
         else:
@@ -109,8 +115,15 @@ while True:
     #-------< Particles >-------#
 
     for particle in particle_list[:]:
-        particle.move(((sine*0.5)+0.2,(sine*0.1)+0.4))
+        #particle.move(((sine*0.5)+0.1,(sine*0.1)+0.2))
+        particle.tick(sine_value)
         particle.blit(display)
+        particle.time += -1
+        particle.rotate(1)
+        if particle.time <= 0:
+            particle_list.remove(particle)
+        elif particle.limit <= particle.y:
+            particle_list.remove(particle)
 
     #-------< Player Handling >-------#
 
@@ -180,9 +193,13 @@ while True:
         if debug_mode:
             enemy.action("idle")
 
+    #-------< Debug Mode >-------#
+
     if debug_mode:
         render_FPS = font.render("FPS: " + str(round(clock.get_fps(), 2)), True, (255,0,0))
         display.blit(render_FPS, (1, 1))
+
+    #-------< Input Handling >-------#
 
     for event in pygame.event.get():
         if event.type == QUIT:
@@ -202,6 +219,8 @@ while True:
                 debug_mode = not debug_mode
             if event.key == K_SPACE:
                 enemy_list.append(enemies.SmallSlime(mouse_pos[0], mouse_pos[1]))
+            if event.key == K_c:
+                particle_list.append(objects.Particle(mouse_pos[0],mouse_pos[1],randrange(40,80),85,0.9,0.4,(0,0.3)))
 
         if event.type == KEYUP:
             if event.key == K_RIGHT or event.key == K_d:
@@ -212,6 +231,8 @@ while True:
                 moving_up = False
             if event.key == K_DOWN or event.key == K_s:
                 moving_down = False
+
+    #-------< Screen Handling >-------#
 
     surf = pygame.transform.scale(display,WINDOW_SIZE)
 
