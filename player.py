@@ -5,7 +5,7 @@ class Player:
         self.health = 3
         self.x = x
         self.y = y
-        self.speed = 3
+        self.speed = 2.3
         self.size = (11,11)
         self.rect = pygame.Rect((x,y),self.size)
         self.color = (255,0,0)

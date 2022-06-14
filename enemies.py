@@ -103,13 +103,13 @@ class Enemy:
 
 class Slime(Enemy):
     def __init__(self,x,y):
-        super().__init__(3,x,y,0.5,(13,11),color.green,(0,0))
+        super().__init__(5,x,y,0.2,(17,14),color.green,(-1,-5))
         self.sprite = pygame.image.load("images/slime/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
 
         self.animation_database = {
           "idle": [[12],[pygame.image.load("images/slime/idle/0.png")]],
-          "movement": [[12,12],[pygame.image.load("images/slime/movement/0.png"),pygame.image.load("images/slime/movement/1.png")]]}
+          "movement": [[12,12,12,12],[pygame.image.load("images/slime/movement/0.png"),pygame.image.load("images/slime/movement/1.png"),pygame.image.load("images/slime/movement/2.png"),pygame.image.load("images/slime/movement/3.png")]]}
         self.animation_data = self.animation_database["idle"]
 
         self.action("movement")
@@ -122,7 +122,7 @@ class SmallSlime(Enemy):
 
         self.animation_database = {
           "idle": [[12],[pygame.image.load("images/smallslime/idle/0.png")]],
-          "movement": [[24,12,12],[pygame.image.load("images/smallslime/movement/0.png"),pygame.image.load("images/smallslime/movement/1.png"),pygame.image.load("images/smallslime/movement/2.png")]]}
+          "movement": [[12,12,12],[pygame.image.load("images/smallslime/movement/0.png"),pygame.image.load("images/smallslime/movement/1.png"),pygame.image.load("images/smallslime/movement/2.png")]]}
         self.animation_data = self.animation_database["idle"]
 
         self.action("movement")

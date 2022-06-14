@@ -28,6 +28,7 @@ debug_mode = False
 player = player.Player(10,10)
 color = color.Color((170,0,170))
 BLINK_RATE = 5
+sine_value = 0
 
 enemy_list = []
 terrain_list = []
@@ -44,26 +45,26 @@ two_image = pygame.image.load("images/numbers/2.png")
 two_image.set_colorkey(color.colorkey)
 one_image = pygame.image.load("images/numbers/1.png")
 one_image.set_colorkey(color.colorkey)
+zero_image = pygame.image.load("images/numbers/0.png")
+zero_image.set_colorkey(color.colorkey)
 
-def generate_border(width):
-    border_terrain = []
-    border_terrain.append(terrain.Terrain(0,0,(width,DISPLAY_SIZE[1]),color.gray))
-    border_terrain.append(terrain.Terrain(0,0,(DISPLAY_SIZE[0],width),color.gray))
-    border_terrain.append(terrain.Terrain(DISPLAY_SIZE[0]-width,0,(width,DISPLAY_SIZE[1]),color.gray))
-    border_terrain.append(terrain.Terrain(0,DISPLAY_SIZE[1]-width,(DISPLAY_SIZE[0],width),color.gray))
-    return border_terrain
+def generate_border(terrain_list,width):
+    terrain_list.append(terrain.Terrain(0,0,(width,DISPLAY_SIZE[1]),color.littlepink,particle_list))
+    terrain_list.append(terrain.Terrain(0,0,(DISPLAY_SIZE[0],width),color.littlepink,particle_list))
+    terrain_list.append(terrain.Terrain(DISPLAY_SIZE[0]-width,0,(width,DISPLAY_SIZE[1]),color.littlepink,particle_list))
+    terrain_list.append(terrain.Terrain(0,DISPLAY_SIZE[1]-width,(DISPLAY_SIZE[0],width),color.littlepink,particle_list))
 
 def spawn_mobs(enemy_list):
     for i in range(5):
         enemy_list.append(enemies.SmallSlime(110+i*10,200))
     #for i in range(10):
     #    enemy_list.append(enemies.Rat(200,0+i*10))
-    #enemy_list.append(enemies.Rat(200,20))
+    enemy_list.append(enemies.Slime(10,20))
     #enemy_list.append(enemies.Ogre(200,200))
     #enemy_list.append(enemies.Ogre(250,220))
 
 def spawn_terrain(terrain_list):
-    #terrain_list.extend(generate_border(5))
+    generate_border(terrain_list,1)
     #terrain_list.append(terrain.Terrain(40,20,(20,100),color.black))
     #terrain_list.append(terrain.Terrain(200,60,(30,50),color.black))
     #terrain_list.append(terrain.Water(20,200,(100,30)))
@@ -80,8 +81,6 @@ spawn_mobs(enemy_list)
 spawn_terrain(terrain_list)
 spawn_test_particles(particle_list)
 
-sine_value = 0
-
 while True:
     sine_value += 0.05
     sine = round(math.sin(sine_value),2)
@@ -93,10 +92,10 @@ while True:
     #-------< Terrain >-------#
 
     for terrain in terrain_list[:]:
-        terrain.tick()
         if hasattr(terrain,"particle_spawner"):
-            if randrange(0,29) == 0:
-                terrain.particle_spawner.spawn_particle_random(randrange(40,80))
+            terrain.tick()
+            if randrange(0,25) == 0:
+                terrain.particle_spawner.spawn_particle_random(randrange(60,100))
         if hasattr(terrain, "sprite"):
             terrain.blit(display)
         else:
@@ -104,13 +103,15 @@ while True:
 
     #-------< Heath Bar >-------#
 
-    display.blit(heart_image,(262,2))
+    display.blit(heart_image,(197,2))
     if player.health == 3:
-        display.blit(three_image,(282,2))
+        display.blit(three_image,(211,3))
     elif player.health == 2:
-        display.blit(two_image,(282,2))
+        display.blit(two_image,(211,3))
     elif player.health == 1:
-        display.blit(one_image,(282,2))
+        display.blit(one_image,(211,2))
+    else:
+        display.blit(zero_image,(211,2))
 
     #-------< Particles >-------#
 
@@ -119,7 +120,7 @@ while True:
         particle.tick(sine_value)
         particle.blit(display)
         particle.time += -1
-        particle.rotate(1)
+        particle.rotate(2)
         if particle.time <= 0:
             particle_list.remove(particle)
         elif particle.limit <= particle.y:

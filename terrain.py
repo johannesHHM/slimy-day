@@ -33,7 +33,7 @@ class Tree(Terrain):
         self.animation_data = self.animation_database["idle"]
         self.action("idle")
 
-        self.particle_spawner = objects.ParticleSpawner(self.rect.left,self.rect.right,self.rect.top,self.rect.bottom,self.rect.bottom + 3,particle_list)
+        self.particle_spawner = objects.ParticleSpawner(self.rect.left,self.rect.right,self.rect.top,self.rect.bottom,self.rect.bottom + 5,particle_list)
 
     def blit(self,display):
         sprite = self.sprite
@@ -75,7 +75,7 @@ class Tree1(Terrain):
         self.animation_data = self.animation_database["idle"]
         self.action("idle")
 
-        self.particle_spawner = objects.ParticleSpawner(self.rect.left,self.rect.right,self.rect.top,self.rect.bottom,self.rect.bottom + 3,particle_list)
+        self.particle_spawner = objects.ParticleSpawner(self.rect.left,self.rect.right,self.rect.top,self.rect.bottom,self.rect.bottom + 5,particle_list)
 
     def blit(self,display):
         sprite = self.sprite

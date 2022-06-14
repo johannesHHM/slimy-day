@@ -50,4 +50,4 @@ class ParticleSpawner():
         self.particle_list = particle_list
 
     def spawn_particle_random(self,time):
-        self.particle_list.append(Particle(randrange(self.left,self.right),randrange(self.top,self.bottom),time,self.limit,0.9,0.4,(-0.04,0.3)))
+        self.particle_list.append(Particle(randrange(self.left,self.right),randrange(self.top,self.bottom),time,self.limit,0.9,0.4,(-0.06,0.25)))

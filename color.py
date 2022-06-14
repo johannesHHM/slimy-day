@@ -20,3 +20,5 @@ class Color:
         self.jacarta = (51, 51, 80)
         self.eminence = (106, 62, 140)
         self.lilac = (139, 93, 176)
+        self.crayola = (225,141,203)
+        self.littlepink = (243,196,216)
