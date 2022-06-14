@@ -1,4 +1,4 @@
-import pygame
+import pygame, math
 
 class Player:
     def __init__(self,x,y):
@@ -60,7 +60,8 @@ class Player:
         center = (self.x + int(self.size[0]/2),self.y + int(self.size[1]/2))
         return center
 
-    def cursor_player_angle(player_pos,cursor_pos):
-        myradians = math.atan2(cursor_pos[1]-player_pos[1], cursor_pos[0]-player_pos[0])
+    def cursor_player_angle(self,cursor_pos):
+        center = self.center()
+        myradians = math.atan2(cursor_pos[1]-center[1], cursor_pos[0]-center[0])
         mydegrees = math.degrees(myradians)
         return mydegrees
