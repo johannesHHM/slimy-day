@@ -6,6 +6,7 @@ from random import randrange
 clock = pygame.time.Clock()
 
 pygame.init()
+pygame.display.set_caption("Project-4")
 font = pygame.font.SysFont(None, 14)
 gui_font = pygame.font.SysFont(None, 30)
 
@@ -33,6 +34,7 @@ sine_value = 0
 enemy_list = []
 terrain_list = []
 particle_list = []
+bullet_list = []
 
 heart_image = pygame.image.load("images/heart.png")
 heart_image.set_colorkey(color.colorkey)
@@ -59,7 +61,7 @@ def spawn_mobs(enemy_list):
         enemy_list.append(enemies.SmallSlime(110+i*10,200))
     #for i in range(10):
     #    enemy_list.append(enemies.Rat(200,0+i*10))
-    enemy_list.append(enemies.Slime(10,20))
+    enemy_list.append(enemies.Slime(100,20))
     #enemy_list.append(enemies.Ogre(200,200))
     #enemy_list.append(enemies.Ogre(250,220))
 
@@ -68,6 +70,7 @@ def spawn_terrain(terrain_list):
     #terrain_list.append(terrain.Terrain(40,20,(20,100),color.black))
     #terrain_list.append(terrain.Terrain(200,60,(30,50),color.black))
     #terrain_list.append(terrain.Water(20,200,(100,30)))
+    terrain_list.append(terrain.Stone(100,40,particle_list))
     terrain_list.append(terrain.Tree(50,50,particle_list))
     terrain_list.append(terrain.Tree1(170,80,particle_list))
     terrain_list.append(terrain.Tree(60,140,particle_list))
@@ -81,6 +84,8 @@ spawn_mobs(enemy_list)
 spawn_terrain(terrain_list)
 spawn_test_particles(particle_list)
 
+rectss = []
+
 while True:
     sine_value += 0.05
     sine = round(math.sin(sine_value),2)
@@ -92,14 +97,24 @@ while True:
     #-------< Terrain >-------#
 
     for terrain in terrain_list[:]:
+
+        for bullet in bullet_list[:]:
+            if terrain.rect.colliderect(bullet.rect):
+                if hasattr(terrain,"particle_spawner"):
+                    bullet_list.remove(bullet)
+                    terrain.particle_spawner.spawn_particle_position(bullet.center(),10,randrange(40,100),0.9,0.4,(-0.06,0.25),terrain.rect,randrange(2,4))
+
         if hasattr(terrain,"particle_spawner"):
             terrain.tick()
-            if randrange(0,25) == 0:
-                terrain.particle_spawner.spawn_particle_random(randrange(60,100))
+            if randrange(0,29) == 0:
+                terrain.particle_spawner.spawn_particle_random(randrange(60,100),0.9,0.4,(-0.06,0.25))
         if hasattr(terrain, "sprite"):
             terrain.blit(display)
         else:
             pygame.draw.rect(display, terrain.color, terrain.rect)
+
+    for rect in rectss:
+        pygame.draw.rect(display,color.red,rect)
 
     #-------< Heath Bar >-------#
 
@@ -126,6 +141,12 @@ while True:
         elif particle.limit <= particle.y:
             particle_list.remove(particle)
 
+    #-------< Bullets >-------#
+
+    for bullet in bullet_list[:]:
+        bullet.move()
+        bullet.blit(display)
+
     #-------< Player Handling >-------#
 
     if player.invinc > 0:
@@ -133,13 +154,21 @@ while True:
 
     movement = [0,0]
     if moving_right:
+        player.flip = True
         movement[0] = movement[0] + player.speed
     if moving_left:
+        player.flip = False
         movement[0] = movement[0] - player.speed
     if moving_up:
         movement[1] = movement[1] - player.speed
     if moving_down:
         movement[1] = movement[1] + player.speed
+
+    player.tick()
+    if (not movement[0] == 0) or (not movement[1] == 0):
+        player.action("movement")
+    else:
+        player.action("idle")
 
     player.move(movement,terrain_list)
 
@@ -151,16 +180,16 @@ while True:
     rotimage.set_colorkey(color.colorkey)
 
     p_center = player.center()
-    p_center = (p_center[0]-int(rotimage.get_width()/2),p_center[1]-int(rotimage.get_height()/2))
+    #p_center = (p_center[0]-int(rotimage.get_width()/2),p_center[1]-int(rotimage.get_height()/2))
 
     if player.invinc > 0:
         if BLINK_RATE > 0:
-            display.blit(rotimage,p_center)
+            player.blit(display)
         BLINK_RATE += -1
         if BLINK_RATE <= -5:
             BLINK_RATE = 5
     else:
-        display.blit(rotimage,p_center)
+        player.blit(display)
     #pygame.draw.rect(display, color.red, player.rect)
     #pygame.draw.rect(display, (0,0,255), pygame.Rect(player.center(),(1,1)))
 
@@ -181,6 +210,15 @@ while True:
         if enemy.rect.colliderect(player.rect) and player.invinc <= 0:
             player.health += -1
             player.invinc = 80
+
+        for bullet in bullet_list[:]:
+            if enemy.rect.colliderect(bullet.rect):
+                enemy.health += -1
+                bullet_list.remove(bullet)
+
+        if enemy.health <= 0:
+            enemy_list.remove(enemy)
+
         if hasattr(enemy, "sprite"):
             enemy.blit(display)
         else:
@@ -218,10 +256,19 @@ while True:
                 moving_down = True
             if event.key == K_p:
                 debug_mode = not debug_mode
-            if event.key == K_SPACE:
+            if event.key == K_v:
                 enemy_list.append(enemies.SmallSlime(mouse_pos[0], mouse_pos[1]))
             if event.key == K_c:
+                enemy_list.append(enemies.Slime(mouse_pos[0], mouse_pos[1]))
                 particle_list.append(objects.Particle(mouse_pos[0],mouse_pos[1],randrange(40,80),85,0.9,0.4,(0,0.3)))
+            if event.key == K_SPACE:
+                bullet = objects.Bullet(player.center()[0] - 1,player.center()[1],mouse_pos)
+                bullet_list.append(bullet)
+                player.flip = bullet.direction()
+
+            if event.key == K_ESCAPE:
+                pygame.quit()
+                sys.exit()
 
         if event.type == KEYUP:
             if event.key == K_RIGHT or event.key == K_d:
