@@ -1,5 +1,5 @@
 import pygame, sys, math, random
-import color, player, enemies, terrain, objects
+import color, player, enemies, terrain, objects,doodads
 from pygame.locals import *
 from random import randrange
 
@@ -35,6 +35,7 @@ enemy_list = []
 terrain_list = []
 particle_list = []
 bullet_list = []
+doodad_list = []
 
 heart_image = pygame.image.load("images/heart.png")
 heart_image.set_colorkey(color.colorkey)
@@ -70,19 +71,33 @@ def spawn_terrain(terrain_list):
     #terrain_list.append(terrain.Terrain(40,20,(20,100),color.black))
     #terrain_list.append(terrain.Terrain(200,60,(30,50),color.black))
     #terrain_list.append(terrain.Water(20,200,(100,30)))
-    terrain_list.append(terrain.Stone(100,40,particle_list))
-    terrain_list.append(terrain.Tree(50,50,particle_list))
+    terrain_list.append(terrain.SmallStone(150,170,particle_list))
+    terrain_list.append(terrain.Stone(120,35,particle_list))
+    terrain_list.append(terrain.Tree(40,50,particle_list))
     terrain_list.append(terrain.Tree1(170,80,particle_list))
-    terrain_list.append(terrain.Tree(60,140,particle_list))
+    terrain_list.append(terrain.Tree(50,140,particle_list))
     pass
 
 def spawn_test_particles(particle_list):
-    # particle_list.append(objects.Particle(10,10,100,70,1,1,(0.1,0.1)))
+    #particle_list.append(objects.Particle(10,10,100,70,1,1,(0.1,0.1)))
+    pass
+
+def spawn_doodads(doodad_list):
+    doodad_list.append(doodads.Flowers(10,15))
+    doodad_list.append(doodads.Flowers(79,30))
+    doodad_list.append(doodads.Flowers(132,85))
+    doodad_list.append(doodads.Flowers(15,92))
+    doodad_list.append(doodads.Flowers(81,107))
+    doodad_list.append(doodads.Flowers(179,18))
+    doodad_list.append(doodads.Flowers(192,146))
+    doodad_list.append(doodads.Flowers(94,186))
+    doodad_list.append(doodads.Flowers(17,193))
     pass
 
 spawn_mobs(enemy_list)
 spawn_terrain(terrain_list)
 spawn_test_particles(particle_list)
+spawn_doodads(doodad_list)
 
 rectss = []
 
@@ -94,27 +109,32 @@ while True:
 
     display.blit(background,(0,0))
 
+    #-------< Doodad >-------#
+
+    for doodad in doodad_list:
+        doodad.blit(display)
+        doodad.tick()
+
     #-------< Terrain >-------#
 
     for terrain in terrain_list[:]:
-
         for bullet in bullet_list[:]:
             if terrain.rect.colliderect(bullet.rect):
+                bullet_list.remove(bullet)
                 if hasattr(terrain,"particle_spawner"):
-                    bullet_list.remove(bullet)
-                    terrain.particle_spawner.spawn_particle_position(bullet.center(),10,randrange(40,100),0.9,0.4,(-0.06,0.25),terrain.rect,randrange(2,4))
+                    terrain.particle_spawner.spawn_particle_position(bullet.center(),10,randrange(40,100),0.9,0.4,(-0.06,0.25),terrain.rect,randrange(2,5))
 
         if hasattr(terrain,"particle_spawner"):
-            terrain.tick()
             if randrange(0,29) == 0:
                 terrain.particle_spawner.spawn_particle_random(randrange(60,100),0.9,0.4,(-0.06,0.25))
         if hasattr(terrain, "sprite"):
             terrain.blit(display)
+            terrain.tick()
         else:
             pygame.draw.rect(display, terrain.color, terrain.rect)
 
     for rect in rectss:
-        pygame.draw.rect(display,color.red,rect)
+        pygame.draw.rect(display4,4,color.red,rect)
 
     #-------< Heath Bar >-------#
 
@@ -244,6 +264,12 @@ while True:
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = pygame.mouse.get_pos()
+            x = pos[0]//zoom
+            y = pos[1]//zoom
+            print("(" + str(x) + "," + str(y) + ")")
 
         if event.type == pygame.KEYDOWN:
             if event.key == K_RIGHT or event.key == K_d:
