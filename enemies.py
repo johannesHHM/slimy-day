@@ -3,11 +3,13 @@ import pygame, color, math
 color = color.Color((170,0,170))
 
 class Enemy:
-    def __init__(self,health,x,y,speed,size,default_color,offput):
+    def __init__(self,health,x,y,speed,score,size,default_color,offput):
         self.health = health
         self.x = x
         self.y = y
         self.speed = speed
+        self.score = score
+
         self.size = size
         self.rect = pygame.Rect((x,y),size)
         self.color = default_color
@@ -22,7 +24,11 @@ class Enemy:
         collision_list = []
         for object in object_list:
             if object.rect.colliderect(self.rect):
-                collision_list.append(object)
+                if hasattr(object, "type") and object.type == "Border":
+                    pass
+                else:
+                    collision_list.append(object)
+
         return collision_list
 
     def center(self):
@@ -103,7 +109,7 @@ class Enemy:
 
 class Slime(Enemy):
     def __init__(self,x,y):
-        super().__init__(5,x,y,0.2,(17,14),color.green,(-1,-5))
+        super().__init__(5,x,y,0.25,10,(17,14),color.green,(-1,-5))
         self.sprite = pygame.image.load("images/slime/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
 
@@ -116,7 +122,7 @@ class Slime(Enemy):
 
 class SmallSlime(Enemy):
     def __init__(self,x,y):
-        super().__init__(3,x,y,0.5,(11,11),color.green,(-1,-2))
+        super().__init__(3,x,y,0.5,5,(11,11),color.green,(-1,-2))
         self.sprite = pygame.image.load("images/smallslime/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
 

@@ -28,7 +28,11 @@ debug_mode = False
 
 player = player.Player(10,10)
 color = color.Color((170,0,170))
-BLINK_RATE = 5
+blink_rate = 5
+score = 0
+shooting = False
+shooting_cooldown = 0
+
 sine_value = 0
 
 enemy_list = []
@@ -36,6 +40,7 @@ terrain_list = []
 particle_list = []
 bullet_list = []
 doodad_list = []
+enemy_spawner_list = []
 
 heart_image = pygame.image.load("images/heart.png")
 heart_image.set_colorkey(color.colorkey)
@@ -52,10 +57,10 @@ zero_image = pygame.image.load("images/numbers/0.png")
 zero_image.set_colorkey(color.colorkey)
 
 def generate_border(terrain_list,width):
-    terrain_list.append(terrain.Terrain(0,0,(width,DISPLAY_SIZE[1]),color.littlepink,particle_list))
-    terrain_list.append(terrain.Terrain(0,0,(DISPLAY_SIZE[0],width),color.littlepink,particle_list))
-    terrain_list.append(terrain.Terrain(DISPLAY_SIZE[0]-width,0,(width,DISPLAY_SIZE[1]),color.littlepink,particle_list))
-    terrain_list.append(terrain.Terrain(0,DISPLAY_SIZE[1]-width,(DISPLAY_SIZE[0],width),color.littlepink,particle_list))
+    terrain_list.append(terrain.Terrain(0,0,(width,DISPLAY_SIZE[1]),color.littlepink,"Border",particle_list))
+    terrain_list.append(terrain.Terrain(0,0,(DISPLAY_SIZE[0],width),color.littlepink,"Border",particle_list))
+    terrain_list.append(terrain.Terrain(DISPLAY_SIZE[0]-width,0,(width,DISPLAY_SIZE[1]),color.littlepink,"Border",particle_list))
+    terrain_list.append(terrain.Terrain(0,DISPLAY_SIZE[1]-width,(DISPLAY_SIZE[0],width),color.littlepink,"Border",particle_list))
 
 def spawn_mobs(enemy_list):
     for i in range(5):
@@ -94,10 +99,24 @@ def spawn_doodads(doodad_list):
     doodad_list.append(doodads.Flowers(17,193))
     pass
 
+def spawn_enemy_spawners(enemy_spawner_list):
+    enemy_spawner_list.append(objects.EnemySpawner(-30,-10,0,DISPLAY_SIZE[1]//2,enemy_list))
+    enemy_spawner_list.append(objects.EnemySpawner(-30,-10,DISPLAY_SIZE[1]//2,DISPLAY_SIZE[1],enemy_list))
+    enemy_spawner_list.append(objects.EnemySpawner(0,DISPLAY_SIZE[0]//2,-30,-10,enemy_list))
+    enemy_spawner_list.append(objects.EnemySpawner(DISPLAY_SIZE[0]//2,DISPLAY_SIZE[0],-30,-10,enemy_list))
+
+    enemy_spawner_list.append(objects.EnemySpawner(DISPLAY_SIZE[0] + 10,DISPLAY_SIZE[0] + 30,0,DISPLAY_SIZE[1]//2,enemy_list))
+    enemy_spawner_list.append(objects.EnemySpawner(DISPLAY_SIZE[0] + 10,DISPLAY_SIZE[0] + 30,DISPLAY_SIZE[1]//2,DISPLAY_SIZE[1],enemy_list))
+    enemy_spawner_list.append(objects.EnemySpawner(0,DISPLAY_SIZE[0]//2,DISPLAY_SIZE[1] + 10,DISPLAY_SIZE[1] + 30,enemy_list))
+    enemy_spawner_list.append(objects.EnemySpawner(DISPLAY_SIZE[0]//2,DISPLAY_SIZE[0],DISPLAY_SIZE[1] + 10,DISPLAY_SIZE[1] + 30,enemy_list))
+
 spawn_mobs(enemy_list)
 spawn_terrain(terrain_list)
 spawn_test_particles(particle_list)
 spawn_doodads(doodad_list)
+spawn_enemy_spawners(enemy_spawner_list)
+
+spawner = objects.EnemySpawner(0,225,0,255,enemy_list)
 
 rectss = []
 
@@ -136,7 +155,7 @@ while True:
     for rect in rectss:
         pygame.draw.rect(display4,4,color.red,rect)
 
-    #-------< Heath Bar >-------#
+    #-------< HUD >-------#
 
     display.blit(heart_image,(197,2))
     if player.health == 3:
@@ -190,28 +209,34 @@ while True:
     else:
         player.action("idle")
 
+    if shooting and shooting_cooldown <= 0:
+        bullet = objects.Bullet(player.center()[0] - 1,player.center()[1],mouse_pos)
+        bullet_list.append(bullet)
+        player.flip = bullet.direction()
+        shooting_cooldown = 14
+
+    shooting_cooldown += -1
+
     player.move(movement,terrain_list)
 
     mouse_x, mouse_y = pygame.mouse.get_pos()
     mouse_pos = (mouse_x//zoom,mouse_y//zoom)
 
-    player.angle = player.cursor_player_angle(mouse_pos) * -1
-    rotimage = pygame.transform.rotate(player.sprite,player.angle)
-    rotimage.set_colorkey(color.colorkey)
-
-    p_center = player.center()
-    #p_center = (p_center[0]-int(rotimage.get_width()/2),p_center[1]-int(rotimage.get_height()/2))
-
     if player.invinc > 0:
-        if BLINK_RATE > 0:
+        if blink_rate > 0:
             player.blit(display)
-        BLINK_RATE += -1
-        if BLINK_RATE <= -5:
-            BLINK_RATE = 5
+        blink_rate += -1
+        if blink_rate <= -5:
+            blink_rate = 5
     else:
         player.blit(display)
-    #pygame.draw.rect(display, color.red, player.rect)
-    #pygame.draw.rect(display, (0,0,255), pygame.Rect(player.center(),(1,1)))
+
+    #-------< Enemy Spawning >-------#
+
+    for spawner in enemy_spawner_list:
+        spawner.tick()
+        if spawner.cooldown <= 0:
+            spawner.spawn_enemies()
 
     #-------< Enemy Handling >-------#
 
@@ -239,11 +264,6 @@ while True:
         if enemy.health <= 0:
             enemy_list.remove(enemy)
 
-        if hasattr(enemy, "sprite"):
-            enemy.blit(display)
-        else:
-            pygame.draw.rect(display, enemy.color, enemy.rect)
-
         enemy.tick()
         enemy.action("movement")
         if move_data["stationary"]:
@@ -251,6 +271,11 @@ while True:
             #enemy.action("idle")
         if debug_mode:
             enemy.action("idle")
+
+        if hasattr(enemy, "sprite"):
+            enemy.blit(display)
+        else:
+            pygame.draw.rect(display, enemy.color, enemy.rect)
 
     #-------< Debug Mode >-------#
 
@@ -288,9 +313,7 @@ while True:
                 enemy_list.append(enemies.Slime(mouse_pos[0], mouse_pos[1]))
                 particle_list.append(objects.Particle(mouse_pos[0],mouse_pos[1],randrange(40,80),85,0.9,0.4,(0,0.3)))
             if event.key == K_SPACE:
-                bullet = objects.Bullet(player.center()[0] - 1,player.center()[1],mouse_pos)
-                bullet_list.append(bullet)
-                player.flip = bullet.direction()
+                shooting = True
 
             if event.key == K_ESCAPE:
                 pygame.quit()
@@ -305,6 +328,8 @@ while True:
                 moving_up = False
             if event.key == K_DOWN or event.key == K_s:
                 moving_down = False
+            if event.key == K_SPACE:
+                shooting = False
 
     #-------< Screen Handling >-------#
 

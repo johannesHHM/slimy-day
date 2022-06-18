@@ -1,4 +1,4 @@
-import pygame,color,math,random
+import pygame,color,math,random,enemies
 from random import randrange
 
 color = color.Color((170,0,170))
@@ -60,6 +60,28 @@ class ParticleSpawner():
             self.particle_list.append(Particle(randrange(clipped_rect.left,clipped_rect.right),randrange(clipped_rect.top,clipped_rect.bottom),time,self.limit,period,amplitude,movement))
         return clipped_rect
 
+class EnemySpawner():
+    def __init__(self,left,right,top,bottom,enemy_list):
+        self.left = left
+        self.right = right
+        self.top = top
+        self.bottom = bottom
+        self.level_rate = [0,0,20]
+
+        self.enemy_list = enemy_list
+
+        self.cooldown = randrange(200,800)
+
+    def tick(self):
+        self.cooldown += -1
+
+    def spawn_enemies(self):
+        if randrange(0,self.level_rate[2]) == 0:
+            self.enemy_list.append(enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
+        else:
+            self.enemy_list.append(enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
+        self.cooldown = randrange(500 + self.level_rate[0],700 + self.level_rate[1])
+
 
 class Bullet():
     def __init__(self,x,y,mouse_pos):
@@ -95,15 +117,7 @@ class Bullet():
         return center
 
     def blit(self,display):
-        # rotimage = pygame.transform.rotate(self.base,self.radian)
-        # rotimage.set_colorkey(color.colorkey)
-        #
-        # center = self.center()
-        # center = (center[0]-int(rotimage.get_width()/2),center[1]-int(rotimage.get_height()/2))
-        #
-        # display.blit(rotimage,center)
         display.blit(self.sprite,(self.x - self.sprite.get_width()//2,self.y -self.sprite.get_height()//2))
-        #pygame.draw.rect(display,color.black,self.rect)
 
     def movement(self,player_center):
         radian = math.atan2(self.center()[1] - player_center[1],self.center()[0] - player_center[0])

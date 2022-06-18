@@ -4,11 +4,12 @@ import objects
 color = color.Color((170,0,170))
 
 class Terrain:
-    def __init__(self,x,y,size,color,particle_list):
+    def __init__(self,x,y,size,color,type,particle_list):
         self.x = x
         self.y = y
         self.size = size
         self.color = color
+        self.type = type
         self.rect = pygame.Rect((x,y),size)
         self.particle_list = particle_list
 
@@ -23,7 +24,7 @@ class Water(Terrain):
         #self.sprite.set_colorkey(color.colorkey)
 class Tree(Terrain):
     def __init__(self,x,y,particle_list):
-        super().__init__(x,y,(25,31),color.chineseblue,particle_list)
+        super().__init__(x,y,(25,31),color.chineseblue,"Tree",particle_list)
         self.sprite = pygame.image.load("images/tree/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
         self.offput = (-2,-1)
@@ -68,7 +69,7 @@ class Tree(Terrain):
 
 class Stone(Terrain):
     def __init__(self,x,y,particle_list):
-        super().__init__(x,y,(34,17),color.chineseblue,particle_list)
+        super().__init__(x,y,(34,17),color.chineseblue,"Stone",particle_list)
         self.sprite = pygame.image.load("images/stone/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
         self.offput = (-2,-1)
@@ -109,7 +110,7 @@ class Stone(Terrain):
 
 class SmallStone(Terrain):
     def __init__(self,x,y,particle_list):
-        super().__init__(x,y,(17,12),color.chineseblue,particle_list)
+        super().__init__(x,y,(17,12),color.chineseblue,"SmallStone",particle_list)
         self.sprite = pygame.image.load("images/smallstone/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
         self.offput = (-2,-2)
@@ -150,7 +151,7 @@ class SmallStone(Terrain):
 
 class Tree1(Terrain):
     def __init__(self,x,y,particle_list):
-        super().__init__(x,y,(25,30),color.chineseblue,particle_list)
+        super().__init__(x,y,(25,30),color.chineseblue,"Tree",particle_list)
         self.sprite = pygame.image.load("images/tree/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
         self.offput = (-2,-2)
