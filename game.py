@@ -1,5 +1,5 @@
 import pygame, sys, math, random
-import color, player, enemies, terrain, objects,doodads
+import color, playerC, enemies, terrain, objects,doodads
 from pygame.locals import *
 from random import randrange
 
@@ -26,7 +26,7 @@ moving_down = False
 
 debug_mode = False
 
-player = player.Player(10,10)
+player = playerC.Player(110,110)
 color = color.Color((170,0,170))
 blink_rate = 5
 score = 0
@@ -46,15 +46,42 @@ heart_image = pygame.image.load("images/heart.png")
 heart_image.set_colorkey(color.colorkey)
 
 background = pygame.image.load("images/background.png")
+end_screen = pygame.image.load("images/endscreen.png")
+end_screen.set_colorkey(color.colorkey)
 
-three_image = pygame.image.load("images/numbers/3.png")
-three_image.set_colorkey(color.colorkey)
-two_image = pygame.image.load("images/numbers/2.png")
-two_image.set_colorkey(color.colorkey)
-one_image = pygame.image.load("images/numbers/1.png")
-one_image.set_colorkey(color.colorkey)
 zero_image = pygame.image.load("images/numbers/0.png")
 zero_image.set_colorkey(color.colorkey)
+one_image = pygame.image.load("images/numbers/1.png")
+one_image.set_colorkey(color.colorkey)
+two_image = pygame.image.load("images/numbers/2.png")
+two_image.set_colorkey(color.colorkey)
+three_image = pygame.image.load("images/numbers/3.png")
+three_image.set_colorkey(color.colorkey)
+four_image = pygame.image.load("images/numbers/4.png")
+four_image.set_colorkey(color.colorkey)
+five_image = pygame.image.load("images/numbers/5.png")
+five_image.set_colorkey(color.colorkey)
+six_image = pygame.image.load("images/numbers/6.png")
+six_image.set_colorkey(color.colorkey)
+seven_image = pygame.image.load("images/numbers/7.png")
+seven_image.set_colorkey(color.colorkey)
+eight_image = pygame.image.load("images/numbers/8.png")
+eight_image.set_colorkey(color.colorkey)
+nine_image = pygame.image.load("images/numbers/9.png")
+nine_image.set_colorkey(color.colorkey)
+
+number_dict = {
+    "0": zero_image,
+    "1": one_image,
+    "2": two_image,
+    "3": three_image,
+    "4": four_image,
+    "5": five_image,
+    "6": six_image,
+    "7": seven_image,
+    "8": eight_image,
+    "9": nine_image
+}
 
 def generate_border(terrain_list,width):
     terrain_list.append(terrain.Terrain(0,0,(width,DISPLAY_SIZE[1]),color.littlepink,"Border",particle_list))
@@ -110,7 +137,23 @@ def spawn_enemy_spawners(enemy_spawner_list):
     enemy_spawner_list.append(objects.EnemySpawner(0,DISPLAY_SIZE[0]//2,DISPLAY_SIZE[1] + 10,DISPLAY_SIZE[1] + 30,enemy_list))
     enemy_spawner_list.append(objects.EnemySpawner(DISPLAY_SIZE[0]//2,DISPLAY_SIZE[0],DISPLAY_SIZE[1] + 10,DISPLAY_SIZE[1] + 30,enemy_list))
 
-spawn_mobs(enemy_list)
+def reset_game():
+    global player,blink_rate,score,shooting,shooting_cooldown,enemy_list,enemy_spawner_list,bullet_list
+    player = playerC.Player(110,110)
+    blink_rate = 5
+    score = 0
+    shooting = False
+    shooting_cooldown = 0
+
+    sine_value = 0
+
+    enemy_list = []
+    #particle_list = []
+    bullet_list = []
+    enemy_spawner_list = []
+
+    spawn_enemy_spawners(enemy_spawner_list)
+
 spawn_terrain(terrain_list)
 spawn_test_particles(particle_list)
 spawn_doodads(doodad_list)
@@ -146,6 +189,7 @@ while True:
         if hasattr(terrain,"particle_spawner"):
             if randrange(0,29) == 0:
                 terrain.particle_spawner.spawn_particle_random(randrange(60,100),0.9,0.4,(-0.06,0.25))
+
         if hasattr(terrain, "sprite"):
             terrain.blit(display)
             terrain.tick()
@@ -156,6 +200,16 @@ while True:
         pygame.draw.rect(display4,4,color.red,rect)
 
     #-------< HUD >-------#
+
+    score_string = str(score)
+    length = len(score_string)
+    offset = (length*13)//2
+    number_pos = (DISPLAY_SIZE[0]//2) - offset
+
+    for i in range(length):
+        number = score_string[i]
+        display.blit(number_dict[number],(number_pos,3))
+        number_pos += 13
 
     display.blit(heart_image,(197,2))
     if player.health == 3:
@@ -170,7 +224,6 @@ while True:
     #-------< Particles >-------#
 
     for particle in particle_list[:]:
-        #particle.move(((sine*0.5)+0.1,(sine*0.1)+0.2))
         particle.tick(sine_value)
         particle.blit(display)
         particle.time += -1
@@ -188,52 +241,55 @@ while True:
 
     #-------< Player Handling >-------#
 
-    if player.invinc > 0:
-        player.invinc += -1
+    if player.health > 0:
+        if player.invinc > 0:
+            player.invinc += -1
 
-    movement = [0,0]
-    if moving_right:
-        player.flip = True
-        movement[0] = movement[0] + player.speed
-    if moving_left:
-        player.flip = False
-        movement[0] = movement[0] - player.speed
-    if moving_up:
-        movement[1] = movement[1] - player.speed
-    if moving_down:
-        movement[1] = movement[1] + player.speed
+        movement = [0,0]
+        if moving_right:
+            player.flip = True
+            movement[0] = movement[0] + player.speed
+        if moving_left:
+            player.flip = False
+            movement[0] = movement[0] - player.speed
+        if moving_up:
+            movement[1] = movement[1] - player.speed
+        if moving_down:
+            movement[1] = movement[1] + player.speed
 
-    player.tick()
-    if (not movement[0] == 0) or (not movement[1] == 0):
-        player.action("movement")
-    else:
-        player.action("idle")
+        player.tick()
+        if (not movement[0] == 0) or (not movement[1] == 0):
+            player.action("movement")
+        else:
+            player.action("idle")
 
-    if shooting and shooting_cooldown <= 0:
-        bullet = objects.Bullet(player.center()[0] - 1,player.center()[1],mouse_pos)
-        bullet_list.append(bullet)
-        player.flip = bullet.direction()
-        shooting_cooldown = 14
+        if shooting and shooting_cooldown <= 0:
+            bullet = objects.Bullet(player.center()[0] - 1,player.center()[1],mouse_pos)
+            bullet_list.append(bullet)
+            player.flip = bullet.direction()
+            shooting_cooldown = 14
 
-    shooting_cooldown += -1
+        shooting_cooldown += -1
 
-    player.move(movement,terrain_list)
+        player.move(movement,terrain_list)
 
-    mouse_x, mouse_y = pygame.mouse.get_pos()
-    mouse_pos = (mouse_x//zoom,mouse_y//zoom)
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        mouse_pos = (mouse_x//zoom,mouse_y//zoom)
 
-    if player.invinc > 0:
-        if blink_rate > 0:
+        if player.invinc > 0:
+            if blink_rate > 0:
+                player.blit(display)
+            blink_rate += -1
+            if blink_rate <= -5:
+                blink_rate = 5
+        else:
             player.blit(display)
-        blink_rate += -1
-        if blink_rate <= -5:
-            blink_rate = 5
-    else:
-        player.blit(display)
 
     #-------< Enemy Spawning >-------#
 
     for spawner in enemy_spawner_list:
+        if score >= 200:
+            spawner.level_rate = [-150,-150,7]
         spawner.tick()
         if spawner.cooldown <= 0:
             spawner.spawn_enemies()
@@ -262,6 +318,7 @@ while True:
                 bullet_list.remove(bullet)
 
         if enemy.health <= 0:
+            score += enemy.score
             enemy_list.remove(enemy)
 
         enemy.tick()
@@ -314,6 +371,8 @@ while True:
                 particle_list.append(objects.Particle(mouse_pos[0],mouse_pos[1],randrange(40,80),85,0.9,0.4,(0,0.3)))
             if event.key == K_SPACE:
                 shooting = True
+                if player.health <= 0:
+                    reset_game()
 
             if event.key == K_ESCAPE:
                 pygame.quit()
@@ -330,6 +389,10 @@ while True:
                 moving_down = False
             if event.key == K_SPACE:
                 shooting = False
+
+    if player.health <= 0:
+        display.blit(end_screen,(0,0))
+
 
     #-------< Screen Handling >-------#
 

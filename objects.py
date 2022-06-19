@@ -66,7 +66,7 @@ class EnemySpawner():
         self.right = right
         self.top = top
         self.bottom = bottom
-        self.level_rate = [0,0,20]
+        self.level_rate = [-100,-100,10]
 
         self.enemy_list = enemy_list
 
