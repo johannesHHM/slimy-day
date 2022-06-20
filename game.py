@@ -100,15 +100,11 @@ def spawn_mobs(enemy_list):
 
 def spawn_terrain(terrain_list):
     generate_border(terrain_list,1)
-    #terrain_list.append(terrain.Terrain(40,20,(20,100),color.black))
-    #terrain_list.append(terrain.Terrain(200,60,(30,50),color.black))
-    #terrain_list.append(terrain.Water(20,200,(100,30)))
     terrain_list.append(terrain.SmallStone(150,170,particle_list))
     terrain_list.append(terrain.Stone(120,35,particle_list))
     terrain_list.append(terrain.Tree(40,50,particle_list))
-    terrain_list.append(terrain.Tree1(170,80,particle_list))
+    terrain_list.append(terrain.Tree(170,80,particle_list))
     terrain_list.append(terrain.Tree(50,140,particle_list))
-    pass
 
 def spawn_test_particles(particle_list):
     #particle_list.append(objects.Particle(10,10,100,70,1,1,(0.1,0.1)))
@@ -286,13 +282,15 @@ while True:
             player.blit(display)
 
     #-------< Enemy Spawning >-------#
-
-    for spawner in enemy_spawner_list:
-        if score >= 200:
-            spawner.level_rate = [-150,-150,7]
-        spawner.tick()
-        if spawner.cooldown <= 0:
-            spawner.spawn_enemies()
+    if len(enemy_list) < 160:
+        for spawner in enemy_spawner_list:
+            if player.health <= 0:
+                spawner.level_rate = [-450,-600,5]
+            if score >= 200:
+                spawner.level_rate = [-150,-150,7]
+            spawner.tick()
+            if spawner.cooldown <= 0:
+                spawner.spawn_enemies()
 
     #-------< Enemy Handling >-------#
 
@@ -368,7 +366,7 @@ while True:
                 enemy_list.append(enemies.SmallSlime(mouse_pos[0], mouse_pos[1]))
             if event.key == K_c:
                 enemy_list.append(enemies.Slime(mouse_pos[0], mouse_pos[1]))
-                particle_list.append(objects.Particle(mouse_pos[0],mouse_pos[1],randrange(40,80),85,0.9,0.4,(0,0.3)))
+                particle_list.append(objects.Leaf(mouse_pos[0],mouse_pos[1],randrange(40,80),85,0.9,0.4,(0,0.3)))
             if event.key == K_SPACE:
                 shooting = True
                 if player.health <= 0:

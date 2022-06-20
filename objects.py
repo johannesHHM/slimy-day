@@ -1,15 +1,15 @@
 import pygame,color,math,random,enemies
-from random import randrange
+from random import randrange,uniform
 
 color = color.Color((170,0,170))
 
-leaf_list = [pygame.image.load("images/particles/leaf/0.png"),pygame.image.load("images/particles/leaf/1.png"),pygame.image.load("images/particles/leaf/2.png"),pygame.image.load("images/particles/leaf/3.png")]
+#leaf_list = [pygame.image.load("images/particles/leaf/0.png"),pygame.image.load("images/particles/leaf/1.png"),pygame.image.load("images/particles/leaf/2.png"),pygame.image.load("images/particles/leaf/3.png")]
 
 class Particle():
-    def __init__(self,x,y,time,limit,period,amplitude,movement):
+    def __init__(self,x,y,time,limit,period,amplitude,movement,base):
         self.x = x
         self.y = y
-        self.base = random.choice(leaf_list)
+        self.base = random.choice(base)
         self.sprite = self.base
         self.sprite.set_colorkey(color.colorkey)
         self.rotation = 0
@@ -40,7 +40,22 @@ class Particle():
     def blit(self,display):
         display.blit(self.sprite,(self.x,self.y))
 
-class ParticleSpawner():
+class Leaf(Particle):
+    def __init__(self,x,y,time,limit,period,amplitude,movement):
+        leaf_list = [pygame.image.load("images/particles/leaf/0.png"),pygame.image.load("images/particles/leaf/1.png"),pygame.image.load("images/particles/leaf/2.png"),pygame.image.load("images/particles/leaf/3.png")]
+        super().__init__(x,y,time,limit,period,amplitude,movement,leaf_list)
+
+class Stone(Particle):
+    def __init__(self,x,y,time,limit,period,amplitude,movement):
+        stone_list = [pygame.image.load("images/particles/stone/0.png"),pygame.image.load("images/particles/stone/1.png"),pygame.image.load("images/particles/stone/2.png")]
+        super().__init__(x,y,time,limit,period,amplitude,movement,stone_list)
+
+        self.movement = (uniform(-0.6,0.6),uniform(-0.6,0.2))
+
+    def tick(self,sine_value):
+        self.move((self.movement[0],self.movement[1]))
+
+class LeafParticleSpawner():
     def __init__(self,left,right,top,bottom,limit,particle_list):
         self.left = left
         self.right = right
@@ -50,15 +65,35 @@ class ParticleSpawner():
         self.particle_list = particle_list
 
     def spawn_particle_random(self,time,period,amplitude,movement):
-        self.particle_list.append(Particle(randrange(self.left,self.right),randrange(self.top,self.bottom),time,self.limit,period,amplitude,movement))
+        self.particle_list.append(Leaf(randrange(self.left,self.right),randrange(self.top,self.bottom),time,self.limit,period,amplitude,movement))
 
     def spawn_particle_position(self,position,impact_range,time,period,amplitude,movement,terrain_rect,amount):
         impact_rect = pygame.Rect(position[0] - impact_range,position[1] - impact_range,impact_range*2+1,impact_range*2+1)
         clipped_rect = terrain_rect.clip(impact_rect)
 
         for _ in range(amount):
-            self.particle_list.append(Particle(randrange(clipped_rect.left,clipped_rect.right),randrange(clipped_rect.top,clipped_rect.bottom),time,self.limit,period,amplitude,movement))
+            self.particle_list.append(Leaf(randrange(clipped_rect.left,clipped_rect.right),randrange(clipped_rect.top,clipped_rect.bottom),time,self.limit,period,amplitude,movement))
         return clipped_rect
+
+class StoneParticleSpawner():
+    def __init__(self,left,right,top,bottom,limit,particle_list):
+        self.left = left
+        self.right = right
+        self.top = top
+        self.bottom = bottom
+        self.limit = limit
+        self.particle_list = particle_list
+
+    def spawn_particle_random(self,time,period,amplitude,movement):
+        pass
+        #self.particle_list.append(Stone(randrange(self.left,self.right),randrange(self.top,self.bottom),time,self.limit,period,amplitude,movement))
+
+    def spawn_particle_position(self,position,impact_range,time,period,amplitude,movement,terrain_rect,amount):
+        impact_rect = pygame.Rect(position[0],position[1],1,1)
+        clipped_rect = terrain_rect.clip(impact_rect)
+
+        for i in range(amount):
+            self.particle_list.append(Stone(position[0],position[1],10,self.limit,period,amplitude,movement))
 
 class EnemySpawner():
     def __init__(self,left,right,top,bottom,enemy_list):
