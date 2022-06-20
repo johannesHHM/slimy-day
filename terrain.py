@@ -9,6 +9,7 @@ class Terrain:
         self.y = y
         self.size = size
         self.color = color
+        self.type = type
         self.rect = pygame.Rect((x,y),size)
         self.particle_list = particle_list
 
