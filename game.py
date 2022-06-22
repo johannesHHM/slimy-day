@@ -44,6 +44,8 @@ enemy_spawner_list = []
 
 heart_image = pygame.image.load("images/heart.png")
 heart_image.set_colorkey(color.colorkey)
+level_image = pygame.image.load("images/level.png")
+level_image.set_colorkey(color.colorkey)
 
 background = pygame.image.load("images/background.png")
 end_screen = pygame.image.load("images/endscreen.png")
@@ -82,6 +84,9 @@ number_dict = {
     "8": eight_image,
     "9": nine_image
 }
+
+level_rate_list = [[0,0,20],[-20,-50,15],[-50,-80,13],[-70,-100,10],[-100,-120,10],[-100,-150,10],[-120,-170,8],[-140,-200,8],[-160,-220,6],[-170,-230,6]]
+level = 0
 
 def generate_border(terrain_list,width):
     terrain_list.append(terrain.Terrain(0,0,(width,DISPLAY_SIZE[1]),color.littlepink,"Border",particle_list))
@@ -144,7 +149,6 @@ def reset_game():
     sine_value = 0
 
     enemy_list = []
-    #particle_list = []
     bullet_list = []
     enemy_spawner_list = []
 
@@ -197,6 +201,14 @@ while True:
 
     #-------< HUD >-------#
 
+    display.blit(level_image,(3,3))
+    level_string = str(level + 1)
+    level_number_pos = 2
+    for i in range(len(level_string)):
+        number = level_string[i]
+        display.blit(number_dict[number],(31 + level_number_pos,3))
+        level_number_pos += 12
+
     score_string = str(score)
     length = len(score_string)
     offset = (length*13)//2
@@ -205,17 +217,10 @@ while True:
     for i in range(length):
         number = score_string[i]
         display.blit(number_dict[number],(number_pos,3))
-        number_pos += 13
+        number_pos += 12
 
     display.blit(heart_image,(197,2))
-    if player.health == 3:
-        display.blit(three_image,(211,3))
-    elif player.health == 2:
-        display.blit(two_image,(211,3))
-    elif player.health == 1:
-        display.blit(one_image,(211,2))
-    else:
-        display.blit(zero_image,(211,2))
+    display.blit(number_dict[str(player.health)],(211,3))
 
     #-------< Particles >-------#
 
@@ -281,16 +286,24 @@ while True:
         else:
             player.blit(display)
 
+    #-------< Level Spawning >-------#
+
+    level = score//150
+    if level > len(level_rate_list) - 1:
+        level = 9
+
     #-------< Enemy Spawning >-------#
     if len(enemy_list) < 160:
         for spawner in enemy_spawner_list:
-            if player.health <= 0:
-                spawner.level_rate = [-450,-600,5]
-            if score >= 200:
-                spawner.level_rate = [-150,-150,7]
             spawner.tick()
             if spawner.cooldown <= 0:
-                spawner.spawn_enemies()
+                if player.health > 0:
+                    if level <= len(level_rate_list) - 1:
+                        spawner.spawn_enemies(level_rate_list[level])
+                    else:
+                        spawner.spawn_enemies(level_rate_list[len(level_rate_list) - 1])
+                else:
+                    spawner.spawn_enemies([-470,-600,4])
 
     #-------< Enemy Handling >-------#
 
@@ -321,9 +334,7 @@ while True:
 
         enemy.tick()
         enemy.action("movement")
-        if move_data["stationary"]:
-            pass
-            #enemy.action("idle")
+
         if debug_mode:
             enemy.action("idle")
 

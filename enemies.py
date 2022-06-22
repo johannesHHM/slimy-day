@@ -109,7 +109,7 @@ class Enemy:
 
 class Slime(Enemy):
     def __init__(self,x,y):
-        super().__init__(5,x,y,0.25,10,(17,14),color.green,(-1,-5))
+        super().__init__(6,x,y,0.25,10,(17,14),color.green,(-1,-5))
         self.sprite = pygame.image.load("images/slime/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
 

@@ -101,21 +101,19 @@ class EnemySpawner():
         self.right = right
         self.top = top
         self.bottom = bottom
-        self.level_rate = [-100,-100,10]
 
         self.enemy_list = enemy_list
-
         self.cooldown = randrange(200,800)
 
     def tick(self):
         self.cooldown += -1
 
-    def spawn_enemies(self):
-        if randrange(0,self.level_rate[2]) == 0:
+    def spawn_enemies(self,level_rate):
+        if randrange(0,level_rate[2]) == 0:
             self.enemy_list.append(enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
         else:
             self.enemy_list.append(enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
-        self.cooldown = randrange(500 + self.level_rate[0],700 + self.level_rate[1])
+        self.cooldown = randrange(500 + level_rate[0],700 + level_rate[1])
 
 
 class Bullet():
