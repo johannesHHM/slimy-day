@@ -12,7 +12,7 @@ class Player:
         self.rect = pygame.Rect((x,y),self.size)
         self.color = (255,0,0)
         self.offput = (-5,-2)
-        self.sprite = pygame.image.load("images/player1.png")
+        self.sprite = pygame.image.load("images/player/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
         self.angle = 0
         self.invinc = 0

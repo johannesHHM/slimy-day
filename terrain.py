@@ -33,11 +33,7 @@ class Tree(Terrain):
 
     def blit(self,display):
         sprite = self.sprite
-        #if self.flip:
-        #    sprite = pygame.transform.flip(sprite, True, False)
-        #    sprite.set_colorkey(color.colorkey)
         display.blit(sprite,(self.x + self.offput[0],self.y + self.offput[1]))
-        #pygame.draw.rect(display,self.color,self.rect)
 
     def action(self,action):
         if self.animation_action == action:
@@ -77,11 +73,7 @@ class Stone(Terrain):
         self.particle_spawner = objects.StoneParticleSpawner(self.rect.left,self.rect.right,self.rect.top,self.rect.bottom,self.rect.bottom + 5,particle_list)
 
     def blit(self,display):
-        #if self.flip:
-        #    sprite = pygame.transform.flip(sprite, True, False)
-        #    sprite.set_colorkey(color.colorkey)
         display.blit(self.sprite,(self.x + self.offput[0],self.y + self.offput[1]))
-        #pygame.draw.rect(display,self.color,self.rect)
 
     def action(self,action):
         if self.animation_action == action:
@@ -118,11 +110,7 @@ class SmallStone(Terrain):
         self.particle_spawner = objects.StoneParticleSpawner(self.rect.left,self.rect.right,self.rect.top,self.rect.bottom,self.rect.bottom + 5,particle_list)
 
     def blit(self,display):
-        #if self.flip:
-        #    sprite = pygame.transform.flip(sprite, True, False)
-        #    sprite.set_colorkey(color.colorkey)
         display.blit(self.sprite,(self.x + self.offput[0],self.y + self.offput[1]))
-        #pygame.draw.rect(display,self.color,self.rect)
 
     def action(self,action):
         if self.animation_action == action:

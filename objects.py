@@ -148,11 +148,11 @@ class BulletCrack(TemporarySprite):
 
 class SmallSlimeDeath(TemporarySprite):
     def __init__(self,center):
-        super().__init__(center,[[12,12,12],[pygame.image.load("images/smallslime/destruct/0.png"),pygame.image.load("images/smallslime/destruct/1.png"),pygame.image.load("images/smallslime/destruct/2.png")]])
+        super().__init__(center,[[12,12,24],[pygame.image.load("images/smallslime/destruct/0.png"),pygame.image.load("images/smallslime/destruct/1.png"),pygame.image.load("images/smallslime/destruct/2.png")]])
 
 class SlimeDeath(TemporarySprite):
     def __init__(self,center):
-        super().__init__(center,[[12,12,12,12],[pygame.image.load("images/slime/destruct/0.png"),pygame.image.load("images/slime/destruct/1.png"),pygame.image.load("images/slime/destruct/2.png"),pygame.image.load("images/slime/destruct/3.png")]])
+        super().__init__(center,[[12,12,12,24],[pygame.image.load("images/slime/destruct/0.png"),pygame.image.load("images/slime/destruct/1.png"),pygame.image.load("images/slime/destruct/2.png"),pygame.image.load("images/slime/destruct/3.png")]])
 
 class Bullet():
     def __init__(self,x,y,mouse_pos):
@@ -166,7 +166,7 @@ class Bullet():
         self.radian = math.atan2(self.center()[1] - self.mouse_pos[1],self.center()[0] - self.mouse_pos[0])
         self.angle = math.degrees(self.radian) * 1
         self.movement = (math.cos(self.radian) * -self.speed,math.sin(self.radian) * -self.speed)
-        self.base = pygame.image.load("images/bullet.png")
+        self.base = pygame.image.load("images/bullet/bullet.png")
         self.sprite = pygame.transform.rotate(self.base,self.angle)
         self.sprite.set_colorkey(color.colorkey)
 

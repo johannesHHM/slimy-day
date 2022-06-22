@@ -139,29 +139,3 @@ class SmallSlime(Enemy):
 
     def destruct(self,list):
         list.append(objects.SmallSlimeDeath(self.center()))
-
-class Rat(Enemy):
-    def __init__(self,x,y):
-        super().__init__(2,x,y,1.5,(10,9),color.gray,(-3,-2))
-        self.sprite = pygame.image.load("images/rat/idle/0.png")
-        self.sprite.set_colorkey(color.colorkey)
-
-        self.animation_database = {
-          "idle": [[12],[pygame.image.load("images/rat/idle/0.png")]],
-          "movement": [[12,12],[pygame.image.load("images/rat/movement/0.png"),pygame.image.load("images/rat/movement/1.png")]]}
-        self.animation_data = self.animation_database["idle"]
-
-        self.action("movement")
-
-class Ogre(Enemy):
-    def __init__(self,x,y):
-        super().__init__(7,x,y,0.4,(25,29),color.brown,(0,0))
-        self.sprite = pygame.image.load("images/ogre/idle/0.png")
-        self.sprite.set_colorkey(color.colorkey)
-
-        self.animation_database = {
-          "idle": [[12],[pygame.image.load("images/ogre/idle/0.png")]],
-          "movement": [[12,12,12,12],[pygame.image.load("images/ogre/movement/0.png"),pygame.image.load("images/ogre/movement/1.png"),pygame.image.load("images/ogre/movement/2.png"),pygame.image.load("images/ogre/movement/3.png")]]}
-        self.animation_data = self.animation_database["idle"]
-
-        self.action("movement")
