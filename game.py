@@ -41,6 +41,7 @@ particle_list = []
 bullet_list = []
 doodad_list = []
 enemy_spawner_list = []
+tempsprite_list = []
 
 heart_image = pygame.image.load("images/heart.png")
 heart_image.set_colorkey(color.colorkey)
@@ -183,6 +184,8 @@ while True:
         for bullet in bullet_list[:]:
             if terrain.rect.colliderect(bullet.rect):
                 bullet_list.remove(bullet)
+                if not terrain.type == "Border":
+                    tempsprite_list.append(objects.BulletCrack(bullet.center()))
                 if hasattr(terrain,"particle_spawner"):
                     terrain.particle_spawner.spawn_particle_position(bullet.center(),10,randrange(40,100),0.9,0.4,(-0.06,0.25),terrain.rect,randrange(2,5))
 
@@ -211,7 +214,7 @@ while True:
 
     score_string = str(score)
     length = len(score_string)
-    offset = (length*13)//2
+    offset = (length*12)//2
     number_pos = (DISPLAY_SIZE[0]//2) - offset
 
     for i in range(length):
@@ -239,6 +242,76 @@ while True:
     for bullet in bullet_list[:]:
         bullet.move()
         bullet.blit(display)
+
+    #-------< Level Spawning >-------#
+
+    level = score//150
+    if level > len(level_rate_list) - 1:
+        level = 9
+
+    #-------< Enemy Spawning >-------#
+
+    if len(enemy_list) < 160:
+        for spawner in enemy_spawner_list:
+            spawner.tick()
+            if spawner.cooldown <= 0:
+                if player.health > 0:
+                    if level <= len(level_rate_list) - 1:
+                        spawner.spawn_enemies(level_rate_list[level])
+                    else:
+                        spawner.spawn_enemies(level_rate_list[len(level_rate_list) - 1])
+                else:
+                    spawner.spawn_enemies([-470,-600,4])
+
+    #-------< Enemy Handling >-------#
+
+    for enemy in enemy_list[:]:
+        movement = enemy.movement(player.center())
+        other_objects = enemy_list.copy()
+        other_objects.extend(terrain_list)
+        other_objects.remove(enemy)
+
+        if movement[0] < 0:
+            enemy.flip = False
+        else:
+            enemy.flip = True
+        move_data = enemy.move(movement,other_objects)
+
+        if enemy.rect.colliderect(player.rect) and player.invinc <= 0:
+            player.health += -1
+            player.invinc = 80
+
+        for bullet in bullet_list[:]:
+            if enemy.rect.colliderect(bullet.rect):
+                enemy.health += -1
+                bullet_list.remove(bullet)
+                tempsprite_list.append(objects.BulletCrack(bullet.center()))
+
+        if enemy.health <= 0:
+            score += enemy.score
+            enemy_list.remove(enemy)
+            enemy.destruct(tempsprite_list)
+            #tempsprite_list.append(objects.SmallSlimeDeath(enemy.center()))
+
+        enemy.tick()
+        enemy.action("movement")
+
+        if debug_mode:
+            enemy.action("idle")
+
+        if hasattr(enemy, "sprite"):
+            enemy.blit(display)
+        else:
+            pygame.draw.rect(display, enemy.color, enemy.rect)
+
+    #-------< Tempsprite >-------#
+
+    for tempsprite in tempsprite_list[:]:
+        if tempsprite.finished:
+            tempsprite_list.remove(tempsprite)
+        else:
+            tempsprite.tick()
+            tempsprite.blit_center(display)
 
     #-------< Player Handling >-------#
 
@@ -285,63 +358,6 @@ while True:
                 blink_rate = 5
         else:
             player.blit(display)
-
-    #-------< Level Spawning >-------#
-
-    level = score//150
-    if level > len(level_rate_list) - 1:
-        level = 9
-
-    #-------< Enemy Spawning >-------#
-    if len(enemy_list) < 160:
-        for spawner in enemy_spawner_list:
-            spawner.tick()
-            if spawner.cooldown <= 0:
-                if player.health > 0:
-                    if level <= len(level_rate_list) - 1:
-                        spawner.spawn_enemies(level_rate_list[level])
-                    else:
-                        spawner.spawn_enemies(level_rate_list[len(level_rate_list) - 1])
-                else:
-                    spawner.spawn_enemies([-470,-600,4])
-
-    #-------< Enemy Handling >-------#
-
-    for enemy in enemy_list[:]:
-        movement = enemy.movement(player.center())
-        other_objects = enemy_list.copy()
-        other_objects.extend(terrain_list)
-        other_objects.remove(enemy)
-
-        if movement[0] < 0:
-            enemy.flip = False
-        else:
-            enemy.flip = True
-        move_data = enemy.move(movement,other_objects)
-
-        if enemy.rect.colliderect(player.rect) and player.invinc <= 0:
-            player.health += -1
-            player.invinc = 80
-
-        for bullet in bullet_list[:]:
-            if enemy.rect.colliderect(bullet.rect):
-                enemy.health += -1
-                bullet_list.remove(bullet)
-
-        if enemy.health <= 0:
-            score += enemy.score
-            enemy_list.remove(enemy)
-
-        enemy.tick()
-        enemy.action("movement")
-
-        if debug_mode:
-            enemy.action("idle")
-
-        if hasattr(enemy, "sprite"):
-            enemy.blit(display)
-        else:
-            pygame.draw.rect(display, enemy.color, enemy.rect)
 
     #-------< Debug Mode >-------#
 
@@ -399,9 +415,10 @@ while True:
             if event.key == K_SPACE:
                 shooting = False
 
+    #-------< Endscreen >-------#
+
     if player.health <= 0:
         display.blit(end_screen,(0,0))
-
 
     #-------< Screen Handling >-------#
 

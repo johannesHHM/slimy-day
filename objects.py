@@ -1,5 +1,5 @@
 import pygame,color,math,random,enemies
-from random import randrange,uniform
+from random import randrange,uniform,choice
 
 color = color.Color((170,0,170))
 
@@ -115,6 +115,44 @@ class EnemySpawner():
             self.enemy_list.append(enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
         self.cooldown = randrange(500 + level_rate[0],700 + level_rate[1])
 
+class TemporarySprite():
+    def __init__(self,center,animation_data):
+        self.center = center
+        self.animation_data = animation_data
+        self.sprite = self.animation_data[1][0]
+        self.sprite.set_colorkey(color.colorkey)
+
+        self.animation_ticker = 0
+        self.animation_frame = 0
+        self.finished = False
+
+    def tick(self):
+        self.animation_ticker += 1
+        if self.animation_ticker > self.animation_data[0][self.animation_frame]:
+            self.animation_ticker = 0
+            self.animation_frame += 1
+            if self.animation_frame > len(self.animation_data[0]) - 1:
+                self.animation_frame = len(self.animation_data[0]) - 1
+                self.finished = True
+            self.sprite = self.animation_data[1][self.animation_frame]
+            self.sprite.set_colorkey(color.colorkey)
+
+    def blit_center(self,display):
+        x = int(self.sprite.get_width()/2)
+        y = int(self.sprite.get_height()/2)
+        display.blit(self.sprite,(self.center[0] - x,self.center[1] - y))
+
+class BulletCrack(TemporarySprite):
+    def __init__(self,center):
+        super().__init__(center,[[3,3],choice([[pygame.image.load("images/bullet/destruct/0.png"),pygame.image.load("images/bullet/destruct/1.png")],[pygame.image.load("images/bullet/destruct/2.png"),pygame.image.load("images/bullet/destruct/3.png")],[pygame.image.load("images/bullet/destruct/4.png"),pygame.image.load("images/bullet/destruct/5.png")]])])
+
+class SmallSlimeDeath(TemporarySprite):
+    def __init__(self,center):
+        super().__init__(center,[[12,12,12],[pygame.image.load("images/smallslime/destruct/0.png"),pygame.image.load("images/smallslime/destruct/1.png"),pygame.image.load("images/smallslime/destruct/2.png")]])
+
+class SlimeDeath(TemporarySprite):
+    def __init__(self,center):
+        super().__init__(center,[[12,12,12,12],[pygame.image.load("images/slime/destruct/0.png"),pygame.image.load("images/slime/destruct/1.png"),pygame.image.load("images/slime/destruct/2.png"),pygame.image.load("images/slime/destruct/3.png")]])
 
 class Bullet():
     def __init__(self,x,y,mouse_pos):

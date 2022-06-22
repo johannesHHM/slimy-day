@@ -1,4 +1,4 @@
-import pygame, color, math
+import pygame, color, math, objects
 
 color = color.Color((170,0,170))
 
@@ -107,6 +107,9 @@ class Enemy:
             self.sprite = self.animation_data[1][self.animation_frame]
             self.sprite.set_colorkey(color.colorkey)
 
+    def destruct(self,list):
+        pass
+
 class Slime(Enemy):
     def __init__(self,x,y):
         super().__init__(6,x,y,0.25,10,(17,14),color.green,(-1,-5))
@@ -117,8 +120,10 @@ class Slime(Enemy):
           "idle": [[12],[pygame.image.load("images/slime/idle/0.png")]],
           "movement": [[12,12,12,12],[pygame.image.load("images/slime/movement/0.png"),pygame.image.load("images/slime/movement/1.png"),pygame.image.load("images/slime/movement/2.png"),pygame.image.load("images/slime/movement/3.png")]]}
         self.animation_data = self.animation_database["idle"]
-
         self.action("movement")
+
+    def destruct(self,list):
+        list.append(objects.SlimeDeath(self.center()))
 
 class SmallSlime(Enemy):
     def __init__(self,x,y):
@@ -130,8 +135,10 @@ class SmallSlime(Enemy):
           "idle": [[12],[pygame.image.load("images/smallslime/idle/0.png")]],
           "movement": [[12,12,12],[pygame.image.load("images/smallslime/movement/0.png"),pygame.image.load("images/smallslime/movement/1.png"),pygame.image.load("images/smallslime/movement/2.png")]]}
         self.animation_data = self.animation_database["idle"]
-
         self.action("movement")
+
+    def destruct(self,list):
+        list.append(objects.SmallSlimeDeath(self.center()))
 
 class Rat(Enemy):
     def __init__(self,x,y):
