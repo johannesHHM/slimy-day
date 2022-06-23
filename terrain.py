@@ -19,7 +19,7 @@ class Terrain:
 
 class Tree(Terrain):
     def __init__(self,x,y,particle_list):
-        super().__init__(x,y,(25,31),color.chineseblue,"Tree",particle_list)
+        super().__init__(x,y,(25,31),color.littlepink,"Tree",particle_list)
         self.sprite = pygame.image.load("images/tree/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
         self.offput = (-2,-1)
@@ -60,7 +60,7 @@ class Tree(Terrain):
 
 class Stone(Terrain):
     def __init__(self,x,y,particle_list):
-        super().__init__(x,y,(34,17),color.chineseblue,"Stone",particle_list)
+        super().__init__(x,y,(34,17),color.vivid_violet,"Stone",particle_list)
         self.sprite = pygame.image.load("images/stone/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
         self.offput = (-2,-1)
@@ -97,7 +97,7 @@ class Stone(Terrain):
 
 class SmallStone(Terrain):
     def __init__(self,x,y,particle_list):
-        super().__init__(x,y,(17,12),color.chineseblue,"SmallStone",particle_list)
+        super().__init__(x,y,(17,12),color.vivid_violet,"SmallStone",particle_list)
         self.sprite = pygame.image.load("images/smallstone/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
         self.offput = (-2,-2)

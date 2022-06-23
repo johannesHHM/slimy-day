@@ -10,7 +10,7 @@ class Player:
         self.speed = 2.1
         self.size = (11,16)
         self.rect = pygame.Rect((x,y),self.size)
-        self.color = (255,0,0)
+        self.color = color.martinique
         self.offput = (-5,-2)
         self.sprite = pygame.image.load("images/player/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)

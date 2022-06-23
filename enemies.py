@@ -112,7 +112,7 @@ class Enemy:
 
 class Slime(Enemy):
     def __init__(self,x,y):
-        super().__init__(6,x,y,0.25,10,(17,14),color.green,(-1,-5))
+        super().__init__(6,x,y,0.25,10,(17,14),color.vivid_violet,(-1,-5))
         self.sprite = pygame.image.load("images/slime/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
 
@@ -127,7 +127,7 @@ class Slime(Enemy):
 
 class SmallSlime(Enemy):
     def __init__(self,x,y):
-        super().__init__(3,x,y,0.5,5,(11,11),color.green,(-1,-2))
+        super().__init__(3,x,y,0.5,5,(11,11),color.amethyst,(-1,-2))
         self.sprite = pygame.image.load("images/smallslime/idle/0.png")
         self.sprite.set_colorkey(color.colorkey)
 

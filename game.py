@@ -86,14 +86,14 @@ number_dict = {
     "9": nine_image
 }
 
-level_rate_list = [[0,0,20],[-20,-50,15],[-50,-80,13],[-70,-100,10],[-100,-120,10],[-100,-150,10],[-120,-170,8],[-140,-200,8],[-160,-220,6],[-170,-230,6]]
+level_rate_list = [[0,0,100],[-20,-50,15],[-50,-80,13],[-70,-100,10],[-100,-120,10],[-100,-150,10],[-120,-170,8],[-140,-200,8],[-160,-220,6],[-170,-230,6]]
 level = 0
 
 def generate_border(terrain_list,width):
-    terrain_list.append(terrain.Terrain(0,0,(width,DISPLAY_SIZE[1]),color.littlepink,"Border",particle_list))
-    terrain_list.append(terrain.Terrain(0,0,(DISPLAY_SIZE[0],width),color.littlepink,"Border",particle_list))
-    terrain_list.append(terrain.Terrain(DISPLAY_SIZE[0]-width,0,(width,DISPLAY_SIZE[1]),color.littlepink,"Border",particle_list))
-    terrain_list.append(terrain.Terrain(0,DISPLAY_SIZE[1]-width,(DISPLAY_SIZE[0],width),color.littlepink,"Border",particle_list))
+    terrain_list.append(terrain.Terrain(0,0,(width,DISPLAY_SIZE[1]),color.azalea,"Border",particle_list))
+    terrain_list.append(terrain.Terrain(0,0,(DISPLAY_SIZE[0],width),color.azalea,"Border",particle_list))
+    terrain_list.append(terrain.Terrain(DISPLAY_SIZE[0]-width,0,(width,DISPLAY_SIZE[1]),color.azalea,"Border",particle_list))
+    terrain_list.append(terrain.Terrain(0,DISPLAY_SIZE[1]-width,(DISPLAY_SIZE[0],width),color.azalea,"Border",particle_list))
 
 def spawn_mobs(enemy_list):
     for i in range(5):
@@ -162,8 +162,6 @@ spawn_enemy_spawners(enemy_spawner_list)
 
 spawner = objects.EnemySpawner(0,225,0,255,enemy_list)
 
-rectss = []
-
 while True:
     sine_value += 0.05
     sine = round(math.sin(sine_value),2)
@@ -198,9 +196,6 @@ while True:
             terrain.tick()
         else:
             pygame.draw.rect(display, terrain.color, terrain.rect)
-
-    for rect in rectss:
-        pygame.draw.rect(display4,4,color.red,rect)
 
     #-------< HUD >-------#
 
