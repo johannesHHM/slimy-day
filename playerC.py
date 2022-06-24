@@ -24,7 +24,9 @@ class Player:
         self.animation_frame = 0
         self.animation_database = {
           "idle": [[12,12,12,12,12,12,24],[pygame.image.load("images/player/idle/0.png"),pygame.image.load("images/player/idle/0.png"),pygame.image.load("images/player/idle/0.png"),pygame.image.load("images/player/idle/0.png"),pygame.image.load("images/player/idle/0.png"),pygame.image.load("images/player/idle/0.png"),pygame.image.load("images/player/idle/1.png")]],
-          "movement": [[6,6],[pygame.image.load("images/player/movement/1.png"),pygame.image.load("images/player/movement/0.png")]]}
+          "movement": [[6,6],[pygame.image.load("images/player/movement/1.png"),pygame.image.load("images/player/movement/0.png")]],
+          "idle_throw": [[6,6],[pygame.image.load("images/player/idle_throw/0.png"),pygame.image.load("images/player/idle_throw/1.png")]],
+          "movement_throw": [[6,6],[pygame.image.load("images/player/movement_throw/1.png"),pygame.image.load("images/player/movement_throw/0.png")]]}
         self.animation_data = self.animation_database["idle"]
 
     def collisions(self,object_list):
@@ -96,6 +98,7 @@ class Player:
             pass
         else:
             if self.animation_ticker == 0 or action == "movement":
+                print(action)
                 self.animation_action = action
                 self.animation_data = self.animation_database[action]
                 self.animation_ticker = 0

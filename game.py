@@ -313,7 +313,7 @@ while True:
             tempsprite.blit_center(display)
 
     #-------< Player Handling >-------#
-
+    action = "idle"
     if player.health > 0:
         if player.invinc > 0:
             player.invinc += -1
@@ -332,9 +332,15 @@ while True:
 
         player.tick()
         if (not movement[0] == 0) or (not movement[1] == 0):
-            player.action("movement")
+            action = "movement"
+            if shooting:
+                action = "movement_throw"
         else:
-            player.action("idle")
+            action = "idle"
+            if shooting:
+                action = "idle_throw"
+
+        player.action(action)
 
         if shooting and shooting_cooldown <= 0:
             bullet = objects.Bullet(player.center()[0] - 1,player.center()[1],mouse_pos)

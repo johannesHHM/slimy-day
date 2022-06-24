@@ -116,8 +116,6 @@ class Enemy:
         else:
             return False
 
-
-
 class Slime(Enemy):
     def __init__(self,x,y):
         super().__init__(6,x,y,0.25,10,(17,14),color.vivid_violet,(-1,-5))
