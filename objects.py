@@ -115,6 +115,13 @@ class EnemySpawner():
             self.enemy_list.append(enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
         self.cooldown = randrange(500 + level_rate[0],700 + level_rate[1])
 
+    def spawn_enemy(self,level_rate):
+        if randrange(0,level_rate[2]) == 0:
+            self.enemy_list.append(enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
+        else:
+            self.enemy_list.append(enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
+
+
 class TemporarySprite():
     def __init__(self,center,animation_data):
         self.center = center
@@ -148,11 +155,11 @@ class BulletCrack(TemporarySprite):
 
 class SmallSlimeDeath(TemporarySprite):
     def __init__(self,center):
-        super().__init__(center,[[12,12,24],[pygame.image.load("images/smallslime/destruct/0.png"),pygame.image.load("images/smallslime/destruct/1.png"),pygame.image.load("images/smallslime/destruct/2.png")]])
+        super().__init__(center,[[12,12,36],[pygame.image.load("images/smallslime/destruct/0.png"),pygame.image.load("images/smallslime/destruct/1.png"),pygame.image.load("images/smallslime/destruct/2.png")]])
 
 class SlimeDeath(TemporarySprite):
     def __init__(self,center):
-        super().__init__(center,[[12,12,12,24],[pygame.image.load("images/slime/destruct/0.png"),pygame.image.load("images/slime/destruct/1.png"),pygame.image.load("images/slime/destruct/2.png"),pygame.image.load("images/slime/destruct/3.png")]])
+        super().__init__(center,[[12,12,12,36],[pygame.image.load("images/slime/destruct/0.png"),pygame.image.load("images/slime/destruct/1.png"),pygame.image.load("images/slime/destruct/2.png"),pygame.image.load("images/slime/destruct/3.png")]])
 
 class Bullet():
     def __init__(self,x,y,mouse_pos):

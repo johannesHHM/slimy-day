@@ -17,6 +17,7 @@ class Player:
         self.angle = 0
         self.invinc = 0
         self.flip = False
+        self.kill_box = pygame.Rect((x - 18,y - 18),(47,52))
 
         self.animation_action = "idle"
         self.animation_ticker = 0
@@ -67,6 +68,8 @@ class Player:
             self.y = last_pos[1]
             self.rect.x = last_pos[0]
             self.rect.y = last_pos[1]
+        self.kill_box.x = self.x - 18
+        self.kill_box.y = self.y - 18
         return collision_types
 
     def center(self):
@@ -79,6 +82,7 @@ class Player:
             sprite = pygame.transform.flip(sprite, True, False)
             sprite.set_colorkey(color.colorkey)
         display.blit(sprite,(self.x + self.offput[0],self.y + self.offput[1]))
+        #pygame.draw.rect(display,color.amethyst,self.kill_box)
         #pygame.draw.rect(display,self.color,self.rect)
 
     def cursor_player_angle(self,cursor_pos):

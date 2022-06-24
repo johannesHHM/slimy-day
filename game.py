@@ -288,6 +288,10 @@ while True:
             enemy.destruct(tempsprite_list)
             #tempsprite_list.append(objects.SmallSlimeDeath(enemy.center()))
 
+        if enemy.rect.colliderect(player.kill_box) and enemy.outside(DISPLAY_SIZE):
+            enemy_list.remove(enemy)
+            random.choice(enemy_spawner_list).spawn_enemy(level_rate_list[level])
+
         enemy.tick()
         enemy.action("movement")
 
@@ -384,8 +388,6 @@ while True:
                 moving_down = True
             if event.key == K_p:
                 debug_mode = not debug_mode
-            if event.key == K_v:
-                enemy_list.append(enemies.SmallSlime(mouse_pos[0], mouse_pos[1]))
             if event.key == K_c:
                 enemy_list.append(enemies.Slime(mouse_pos[0], mouse_pos[1]))
                 particle_list.append(objects.Leaf(mouse_pos[0],mouse_pos[1],randrange(40,80),85,0.9,0.4,(0,0.3)))

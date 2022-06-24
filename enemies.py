@@ -110,6 +110,14 @@ class Enemy:
     def destruct(self,list):
         pass
 
+    def outside(self,display_size):
+        if (self.x + self.size[0] < 0) or (self.y + self.size[1] < 0) or (self.x > display_size[0]) or (self.y > display_size[1]):
+            return True
+        else:
+            return False
+
+
+
 class Slime(Enemy):
     def __init__(self,x,y):
         super().__init__(6,x,y,0.25,10,(17,14),color.vivid_violet,(-1,-5))
