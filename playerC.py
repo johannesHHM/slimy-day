@@ -97,8 +97,7 @@ class Player:
         if self.animation_action == action:
             pass
         else:
-            if self.animation_ticker == 0 or action == "movement":
-                print(action)
+            if self.animation_ticker == 0 or action == "movement" or action == "movement_throw" or action == "idle_throw":
                 self.animation_action = action
                 self.animation_data = self.animation_database[action]
                 self.animation_ticker = 0
