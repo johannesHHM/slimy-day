@@ -281,7 +281,7 @@ while True:
                     else:
                         spawner.spawn_enemies(level_rate_list[len(level_rate_list) - 1])
                 else:
-                    spawner.spawn_enemies([-470,-600,4])
+                    spawner.spawn_enemies([-470,-600,[0.4,0.3,0.3]])
 
     #-------< Enemy Handling >-------#
 
