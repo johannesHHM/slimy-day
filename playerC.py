@@ -7,7 +7,7 @@ class Player:
         self.health = 3
         self.x = x
         self.y = y
-        self.speed = 2.1
+        self.speed = 2
         self.size = (11,16)
         self.rect = pygame.Rect((x,y),self.size)
         self.color = color.martinique
@@ -84,8 +84,6 @@ class Player:
             sprite = pygame.transform.flip(sprite, True, False)
             sprite.set_colorkey(color.colorkey)
         display.blit(sprite,(self.x + self.offput[0],self.y + self.offput[1]))
-        #pygame.draw.rect(display,color.amethyst,self.kill_box)
-        #pygame.draw.rect(display,self.color,self.rect)
 
     def cursor_player_angle(self,cursor_pos):
         center = self.center()

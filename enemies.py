@@ -84,8 +84,8 @@ class Enemy:
         if self.flip:
             sprite = pygame.transform.flip(sprite, True, False)
             sprite.set_colorkey(color.colorkey)
-        display.blit(sprite,(self.x + self.offput[0],self.y + self.offput[1]))
         #pygame.draw.rect(display,self.color,self.rect)
+        display.blit(sprite,(self.x + self.offput[0],self.y + self.offput[1]))
 
     def action(self,action):
         if self.animation_action == action:
@@ -129,7 +129,7 @@ class Slime(Enemy):
         self.action("movement")
 
     def destruct(self,list):
-        list.append(objects.SlimeDeath(self.center()))
+        list.append(objects.SlimeDeath(self.center(),self.flip))
 
 class SmallSlime(Enemy):
     def __init__(self,x,y):
@@ -144,4 +144,19 @@ class SmallSlime(Enemy):
         self.action("movement")
 
     def destruct(self,list):
-        list.append(objects.SmallSlimeDeath(self.center()))
+        list.append(objects.SmallSlimeDeath(self.center(),self.flip))
+
+class MediumSlime(Enemy):
+    def __init__(self,x,y):     
+        super().__init__(4,x,y,0.32,5,(13,11),color.amethyst,(-1,-2))
+        self.sprite = pygame.image.load("images/mediumslime/idle/0.png")
+        self.sprite.set_colorkey(color.colorkey)
+
+        self.animation_database = {
+          "idle": [[12],[pygame.image.load("images/mediumslime/idle/0.png")]],
+          "movement": [[12,12,12],[pygame.image.load("images/mediumslime/movement/0.png"),pygame.image.load("images/mediumslime/movement/1.png"),pygame.image.load("images/mediumslime/movement/2.png")]]}
+        self.animation_data = self.animation_database["idle"]
+        self.action("movement")
+
+    def destruct(self,list):
+        list.append(objects.MediumSlimeDeath(self.center(),self.flip))

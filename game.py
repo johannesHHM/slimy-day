@@ -97,6 +97,8 @@ number_dict = {
 
 #-------< Sounds >-------#
 
+pygame.mixer.music.set_volume(0.1)
+
 main_theme = pygame.mixer.music.load("sounds/music/music.wav")
 pygame.mixer.music.play(-1)
 
@@ -194,7 +196,7 @@ while True:
             if terr.rect.colliderect(bullet.rect):
                 bullet_list.remove(bullet)
                 if not terr.type == "Border":
-                    tempsprite_list.append(objects.BulletCrack(bullet.center()))
+                    tempsprite_list.append(objects.BulletCrack(bullet.center(),False))
                 if hasattr(terr,"particle_spawner"):
                     terr.particle_spawner.spawn_particle_position(bullet.center(),10,randrange(40,100),0.9,0.4,(-0.06,0.25),terr.rect,randrange(2,5))
 
@@ -293,7 +295,7 @@ while True:
             if enemy.rect.colliderect(bullet.rect):
                 enemy.health += -1
                 bullet_list.remove(bullet)
-                tempsprite_list.append(objects.BulletCrack(bullet.center()))
+                tempsprite_list.append(objects.BulletCrack(bullet.center(),False))
 
         if enemy.health <= 0:
             score += enemy.score
@@ -448,7 +450,6 @@ while True:
     #-------< Menu >-------#
 
     if main_menu:
-        display.blit(start_screen,(0,0))
         display.blit(start_screen,(0,0))
 
     #-------< Screen Handling >-------#
