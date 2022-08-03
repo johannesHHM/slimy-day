@@ -1,5 +1,5 @@
 import pygame,color,math,random,enemies
-from random import randrange,uniform,choice
+from random import randrange,uniform,choice,choices
 
 color = color.Color((170,0,170))
 
@@ -109,10 +109,17 @@ class EnemySpawner():
         self.cooldown += -1
 
     def spawn_enemies(self,level_rate):
-        if randrange(0,level_rate[2]) == 0:
-            self.enemy_list.append(enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
-        else:
-            self.enemy_list.append(enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
+        population = [enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)),enemies.MediumSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)),enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom))]
+        weight = [0.6,0.3,0.1]
+
+        choice = choices(population,weights=level_rate[2],k=1)[0]
+
+        self.enemy_list.append(choice)
+
+        #if randrange(0,level_rate[2]) == 0:
+        #    self.enemy_list.append(enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
+        #else:
+        #    self.enemy_list.append(enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
         self.cooldown = randrange(500 + level_rate[0],700 + level_rate[1])
 
     def spawn_enemy(self,level_rate):
