@@ -19,6 +19,8 @@ print ('x: ' + str(DISPLAY_SIZE[0]) + ' y: ' + str(DISPLAY_SIZE[1]))
 screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)
 display = pygame.Surface((DISPLAY_SIZE[0], DISPLAY_SIZE[1]))
 
+#-------< Global Variables >-------#
+
 moving_left = False
 moving_right = False
 moving_up = False
@@ -27,14 +29,16 @@ moving_down = False
 debug_mode = False
 
 player = playerC.Player(110,110)
+player.health = 0
 color = color.Color((170,0,170))
 blink_rate = 5
 score = 0
 shooting = False
 shooting_cooldown = 0
 
-sine_value = 0
+main_menu = True
 
+sine_value = 0
 enemy_list = []
 terrain_list = []
 particle_list = []
@@ -42,6 +46,8 @@ bullet_list = []
 doodad_list = []
 enemy_spawner_list = []
 tempsprite_list = []
+
+#-------< Images >-------#
 
 heart_image = pygame.image.load("images/heart.png")
 heart_image.set_colorkey(color.colorkey)
@@ -51,6 +57,9 @@ level_image.set_colorkey(color.colorkey)
 background = pygame.image.load("images/background.png")
 end_screen = pygame.image.load("images/endscreen.png")
 end_screen.set_colorkey(color.colorkey)
+
+start_screen = pygame.image.load("images/menu.png")
+start_screen.set_colorkey(color.colorkey)
 
 zero_image = pygame.image.load("images/numbers/0.png")
 zero_image.set_colorkey(color.colorkey)
@@ -86,23 +95,21 @@ number_dict = {
     "9": nine_image
 }
 
+#-------< Sounds >-------#
+
+main_theme = pygame.mixer.music.load("sounds/music/music.wav")
+pygame.mixer.music.play(-1)
+
 level_rate_list = [[0,0,100],[-20,-50,15],[-50,-80,13],[-70,-100,10],[-100,-120,10],[-100,-150,10],[-120,-170,8],[-140,-200,8],[-160,-220,6],[-170,-230,6]]
 level = 0
+
+#-------< Helping Functions >-------#
 
 def generate_border(terrain_list,width):
     terrain_list.append(terrain.Terrain(0,0,(width,DISPLAY_SIZE[1]),color.azalea,"Border",particle_list))
     terrain_list.append(terrain.Terrain(0,0,(DISPLAY_SIZE[0],width),color.azalea,"Border",particle_list))
     terrain_list.append(terrain.Terrain(DISPLAY_SIZE[0]-width,0,(width,DISPLAY_SIZE[1]),color.azalea,"Border",particle_list))
     terrain_list.append(terrain.Terrain(0,DISPLAY_SIZE[1]-width,(DISPLAY_SIZE[0],width),color.azalea,"Border",particle_list))
-
-def spawn_mobs(enemy_list):
-    for i in range(5):
-        enemy_list.append(enemies.SmallSlime(110+i*10,200))
-    #for i in range(10):
-    #    enemy_list.append(enemies.Rat(200,0+i*10))
-    enemy_list.append(enemies.Slime(100,20))
-    #enemy_list.append(enemies.Ogre(200,200))
-    #enemy_list.append(enemies.Ogre(250,220))
 
 def spawn_terrain(terrain_list):
     generate_border(terrain_list,1)
@@ -111,10 +118,6 @@ def spawn_terrain(terrain_list):
     terrain_list.append(terrain.Tree(40,50,particle_list))
     terrain_list.append(terrain.Tree(170,80,particle_list))
     terrain_list.append(terrain.Tree(50,140,particle_list))
-
-def spawn_test_particles(particle_list):
-    #particle_list.append(objects.Particle(10,10,100,70,1,1,(0.1,0.1)))
-    pass
 
 def spawn_doodads(doodad_list):
     doodad_list.append(doodads.Flowers(10,15))
@@ -140,7 +143,7 @@ def spawn_enemy_spawners(enemy_spawner_list):
     enemy_spawner_list.append(objects.EnemySpawner(DISPLAY_SIZE[0]//2,DISPLAY_SIZE[0],DISPLAY_SIZE[1] + 10,DISPLAY_SIZE[1] + 30,enemy_list))
 
 def reset_game():
-    global player,blink_rate,score,shooting,shooting_cooldown,enemy_list,enemy_spawner_list,bullet_list
+    global player,blink_rate,score,shooting,shooting_cooldown,enemy_list,enemy_spawner_list,bullet_list,terrain_list,doodad_list
     player = playerC.Player(110,110)
     blink_rate = 5
     score = 0
@@ -149,20 +152,28 @@ def reset_game():
 
     sine_value = 0
 
-    enemy_list = []
-    bullet_list = []
-    enemy_spawner_list = []
+    enemy_list.clear()
+    bullet_list.clear()
+    enemy_spawner_list.clear()
 
+    spawn_method()
     spawn_enemy_spawners(enemy_spawner_list)
 
-spawn_terrain(terrain_list)
-spawn_test_particles(particle_list)
-spawn_doodads(doodad_list)
-spawn_enemy_spawners(enemy_spawner_list)
+def spawn_method():
+    global terrain_list,doodad_list
+    terrain_list = []
+    doodad_list = []
+
+    spawn_terrain(terrain_list)
+    spawn_doodads(doodad_list)
+    #spawn_enemy_spawners(enemy_spawner_list)
+
+spawn_method()
 
 spawner = objects.EnemySpawner(0,225,0,255,enemy_list)
 
 while True:
+
     sine_value += 0.05
     sine = round(math.sin(sine_value),2)
 
@@ -178,47 +189,48 @@ while True:
 
     #-------< Terrain >-------#
 
-    for terrain in terrain_list[:]:
+    for terr in terrain_list[:]:
         for bullet in bullet_list[:]:
-            if terrain.rect.colliderect(bullet.rect):
+            if terr.rect.colliderect(bullet.rect):
                 bullet_list.remove(bullet)
-                if not terrain.type == "Border":
+                if not terr.type == "Border":
                     tempsprite_list.append(objects.BulletCrack(bullet.center()))
-                if hasattr(terrain,"particle_spawner"):
-                    terrain.particle_spawner.spawn_particle_position(bullet.center(),10,randrange(40,100),0.9,0.4,(-0.06,0.25),terrain.rect,randrange(2,5))
+                if hasattr(terr,"particle_spawner"):
+                    terr.particle_spawner.spawn_particle_position(bullet.center(),10,randrange(40,100),0.9,0.4,(-0.06,0.25),terr.rect,randrange(2,5))
 
-        if hasattr(terrain,"particle_spawner"):
+        if hasattr(terr,"particle_spawner"):
             if randrange(0,29) == 0:
-                terrain.particle_spawner.spawn_particle_random(randrange(60,100),0.9,0.4,(-0.06,0.25))
+                terr.particle_spawner.spawn_particle_random(randrange(60,100),0.9,0.4,(-0.06,0.25))
 
-        if hasattr(terrain, "sprite"):
-            terrain.blit(display)
-            terrain.tick()
+        if hasattr(terr, "sprite"):
+            terr.blit(display)
+            terr.tick()
         else:
-            pygame.draw.rect(display, terrain.color, terrain.rect)
+            pygame.draw.rect(display, terr.color, terr.rect)
 
     #-------< HUD >-------#
 
-    display.blit(level_image,(3,3))
-    level_string = str(level + 1)
-    level_number_pos = 2
-    for i in range(len(level_string)):
-        number = level_string[i]
-        display.blit(number_dict[number],(31 + level_number_pos,3))
-        level_number_pos += 12
+    if not main_menu:
+        display.blit(level_image,(3,3))
+        level_string = str(level + 1)
+        level_number_pos = 2
+        for i in range(len(level_string)):
+            number = level_string[i]
+            display.blit(number_dict[number],(31 + level_number_pos,3))
+            level_number_pos += 12
 
-    score_string = str(score)
-    length = len(score_string)
-    offset = (length*12)//2
-    number_pos = (DISPLAY_SIZE[0]//2) - offset
+        score_string = str(score)
+        length = len(score_string)
+        offset = (length*12)//2
+        number_pos = (DISPLAY_SIZE[0]//2) - offset
 
-    for i in range(length):
-        number = score_string[i]
-        display.blit(number_dict[number],(number_pos,3))
-        number_pos += 12
+        for i in range(length):
+            number = score_string[i]
+            display.blit(number_dict[number],(number_pos,3))
+            number_pos += 12
 
-    display.blit(heart_image,(197,2))
-    display.blit(number_dict[str(player.health)],(211,3))
+        display.blit(heart_image,(197,2))
+        display.blit(number_dict[str(player.health)],(211,3))
 
     #-------< Particles >-------#
 
@@ -250,6 +262,7 @@ while True:
         for spawner in enemy_spawner_list:
             spawner.tick()
             if spawner.cooldown <= 0:
+                # Death spawning
                 if player.health > 0:
                     if level <= len(level_rate_list) - 1:
                         spawner.spawn_enemies(level_rate_list[level])
@@ -313,6 +326,7 @@ while True:
             tempsprite.blit_center(display)
 
     #-------< Player Handling >-------#
+
     action = "idle"
     if player.health > 0:
         if player.invinc > 0:
@@ -381,7 +395,7 @@ while True:
             pos = pygame.mouse.get_pos()
             x = pos[0]//zoom
             y = pos[1]//zoom
-            print("(" + str(x) + "," + str(y) + ")")
+            #print("(" + str(x) + "," + str(y) + ")")
 
         if event.type == pygame.KEYDOWN:
             if event.key == K_RIGHT or event.key == K_d:
@@ -400,8 +414,16 @@ while True:
             if event.key == K_SPACE:
                 shooting = True
                 if player.health <= 0:
-                    reset_game()
-
+                    main_menu = not main_menu
+                    if main_menu == False:
+                        reset_game()
+                        pygame.mixer.music.fadeout(100)
+                        pygame.mixer.music.load("sounds/music/music_loop.wav")
+                        pygame.mixer.music.play(-1)
+                    else:
+                        pygame.mixer.music.fadeout(100)
+                        pygame.mixer.music.load("sounds/music/music.wav")
+                        pygame.mixer.music.play(-1)
             if event.key == K_ESCAPE:
                 pygame.quit()
                 sys.exit()
@@ -420,8 +442,14 @@ while True:
 
     #-------< Endscreen >-------#
 
-    if player.health <= 0:
+    if player.health <= 0 and not main_menu:
         display.blit(end_screen,(0,0))
+
+    #-------< Menu >-------#
+
+    if main_menu:
+        display.blit(start_screen,(0,0))
+        display.blit(start_screen,(0,0))
 
     #-------< Screen Handling >-------#
 
