@@ -117,7 +117,6 @@ class EnemySpawner():
         self.cooldown = randrange(500 + level_rate[0],700 + level_rate[1])
 
     def spawn_enemy(self,level_rate):
-        print("!")
         population = [enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)),enemies.MediumSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)),enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom))]
 
         choice = choices(population,weights=level_rate[2],k=1)[0]

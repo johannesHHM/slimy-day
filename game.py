@@ -10,6 +10,8 @@ pygame.display.set_caption("Project-4")
 font = pygame.font.SysFont(None, 14)
 gui_font = pygame.font.SysFont(None, 30)
 
+pygame.mouse.set_visible(False)
+
 WINDOW_SIZE = (900,900)
 zoom = 4
 
@@ -54,6 +56,10 @@ heart_image.set_colorkey(color.colorkey)
 level_image = pygame.image.load("images/level.png")
 level_image.set_colorkey(color.colorkey)
 
+cursor_image = pygame.image.load("images/cursor.png")
+cursor_image.set_colorkey(color.colorkey)
+cursor_image_rect = cursor_image.get_rect()
+
 background = pygame.image.load("images/background.png")
 end_screen = pygame.image.load("images/endscreen.png")
 end_screen.set_colorkey(color.colorkey)
@@ -97,10 +103,12 @@ number_dict = {
 
 #-------< Sounds >-------#
 
-pygame.mixer.music.set_volume(0.1)
+pygame.mixer.music.set_volume(0.07)
 
 main_theme = pygame.mixer.music.load("sounds/music/music.wav")
 pygame.mixer.music.play(-1)
+
+#-------< Level Stats >-------#
 
 level_rate_list = [[0,0,[0.85,0.1,0.05]],
 [-20,-50,[0.82,0.17,0.1]],
@@ -141,7 +149,6 @@ def spawn_doodads(doodad_list):
     doodad_list.append(doodads.Flowers(192,146))
     doodad_list.append(doodads.Flowers(94,186))
     doodad_list.append(doodads.Flowers(17,193))
-    pass
 
 def spawn_enemy_spawners(enemy_spawner_list):
     enemy_spawner_list.append(objects.EnemySpawner(-30,-10,0,DISPLAY_SIZE[1]//2,enemy_list))
@@ -262,7 +269,7 @@ while True:
         bullet.move()
         bullet.blit(display)
 
-    #-------< Level Spawning >-------#
+    #-------< Level >-------#
 
     level = score//150
     if level > len(level_rate_list) - 1:
@@ -461,6 +468,11 @@ while True:
 
     if main_menu:
         display.blit(start_screen,(0,0))
+
+    #-------< Cursor >-------#
+
+    cursor_image_rect.center = pygame.mouse.get_pos()
+    display.blit(cursor_image, (cursor_image_rect[0]//zoom,cursor_image_rect[1]//zoom))
 
     #-------< Screen Handling >-------#
 
