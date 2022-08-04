@@ -110,23 +110,18 @@ class EnemySpawner():
 
     def spawn_enemies(self,level_rate):
         population = [enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)),enemies.MediumSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)),enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom))]
-        weight = [0.6,0.3,0.1]
 
         choice = choices(population,weights=level_rate[2],k=1)[0]
-
         self.enemy_list.append(choice)
 
-        #if randrange(0,level_rate[2]) == 0:
-        #    self.enemy_list.append(enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
-        #else:
-        #    self.enemy_list.append(enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
         self.cooldown = randrange(500 + level_rate[0],700 + level_rate[1])
 
     def spawn_enemy(self,level_rate):
-        if randrange(0,level_rate[2]) == 0:
-            self.enemy_list.append(enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
-        else:
-            self.enemy_list.append(enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)))
+        print("!")
+        population = [enemies.SmallSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)),enemies.MediumSlime(randrange(self.left,self.right),randrange(self.top,self.bottom)),enemies.Slime(randrange(self.left,self.right),randrange(self.top,self.bottom))]
+
+        choice = choices(population,weights=level_rate[2],k=1)[0]
+        self.enemy_list.append(choice)
 
 
 class TemporarySprite():
