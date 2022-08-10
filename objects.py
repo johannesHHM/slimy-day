@@ -198,14 +198,14 @@ class Bullet():
             return True
         else:
             return False
-        print(self.angle)
-
+        
     def center(self):
         center = (self.x + int(self.size[0]/2),self.y + int(self.size[1]/2))
         return center
 
     def blit(self,display):
-        display.blit(self.sprite,(self.x - self.sprite.get_width()//2,self.y -self.sprite.get_height()//2))
+        display.blit(self.sprite,(self.x ,self.y ))
+        #pygame.draw.rect(display,(255,255,255),self.rect)
 
     def movement(self,player_center):
         radian = math.atan2(self.center()[1] - player_center[1],self.center()[0] - player_center[0])
