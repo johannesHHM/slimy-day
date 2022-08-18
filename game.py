@@ -277,7 +277,7 @@ while True:
 
     #-------< Enemy Spawning >-------#
 
-    if len(enemy_list) < 160:
+    if len(enemy_list) < 170:
         for spawner in enemy_spawner_list:
             spawner.tick()
             if spawner.cooldown <= 0:
@@ -288,7 +288,7 @@ while True:
                     else:
                         spawner.spawn_enemies(level_rate_list[len(level_rate_list) - 1])
                 else:
-                    spawner.spawn_enemies([-470,-600,[0.4,0.3,0.3]])
+                    spawner.spawn_enemies([-470,-600,[0.4,0.35,0.25]])
 
     #-------< Enemy Handling >-------#
 
