@@ -3,7 +3,7 @@
 
 A top-down shooter.
 
-## controls
+## Controls
 
 <kbd>space</kbd> shoot
 
