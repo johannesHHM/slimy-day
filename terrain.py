@@ -103,7 +103,7 @@ class SmallStone(Terrain):
         self.offput = (-2,-2)
 
         self.animation_database = {
-          "idle": [[12],[pygame.image.load("images/smallstone/idle/0.png")]]}
+          "idle": [[24,24,24,24],[pygame.image.load("images/smallstone/idle/0.png"), pygame.image.load("images/smallstone/idle/1.png"), pygame.image.load("images/smallstone/idle/0.png"), pygame.image.load("images/smallstone/idle/2.png")]]}
         self.animation_data = self.animation_database["idle"]
         self.action("idle")
 
