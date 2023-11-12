@@ -1,12 +1,16 @@
-import pygame, sys, math, random
+import pygame, sys, math, random, os
 import color, playerC, enemies, terrain, objects,doodads
 from pygame.locals import *
 from random import randrange
 
+# set working directory to base dir
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+os.chdir("..")
+
 clock = pygame.time.Clock()
 
 pygame.init()
-pygame.display.set_caption("Project-4")
+pygame.display.set_caption("Slimy Day")
 font = pygame.font.SysFont(None, 14)
 gui_font = pygame.font.SysFont(None, 30)
 
@@ -405,16 +409,22 @@ while True:
 
     #-------< Input Handling >-------#
 
+    
+
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
-            sys.exit()
-
+            sys.exit(0)
+        
         if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = pygame.mouse.get_pos()
-            x = pos[0]//zoom
-            y = pos[1]//zoom
-            #print("(" + str(x) + "," + str(y) + ")")
+            # left click
+            if event.button == 1:
+                shooting = True
+        
+        if event.type == pygame.MOUSEBUTTONUP:
+            # left click
+            if event.button == 1:
+                shooting = False
 
         if event.type == pygame.KEYDOWN:
             if event.key == K_RIGHT or event.key == K_d:
@@ -427,11 +437,7 @@ while True:
                 moving_down = True
             if event.key == K_p:
                 debug_mode = not debug_mode
-            if event.key == K_c:
-                enemy_list.append(enemies.Slime(mouse_pos[0], mouse_pos[1]))
-                particle_list.append(objects.Leaf(mouse_pos[0],mouse_pos[1],randrange(40,80),85,0.9,0.4,(0,0.3)))
             if event.key == K_SPACE:
-                shooting = True
                 if player.health <= 0:
                     main_menu = not main_menu
                     if main_menu == False:
@@ -445,7 +451,7 @@ while True:
                         pygame.mixer.music.play(-1)
             if event.key == K_ESCAPE:
                 pygame.quit()
-                sys.exit()
+                sys.exit(0)
 
         if event.type == KEYUP:
             if event.key == K_RIGHT or event.key == K_d:
@@ -456,8 +462,6 @@ while True:
                 moving_up = False
             if event.key == K_DOWN or event.key == K_s:
                 moving_down = False
-            if event.key == K_SPACE:
-                shooting = False
 
     #-------< Endscreen >-------#
 

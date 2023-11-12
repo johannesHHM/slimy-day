@@ -5,7 +5,7 @@ A top-down shooter.
 
 ## Controls
 
-<kbd>space</kbd> shoot
+<kbd>space</kbd> start round
 
 <kbd>←</kbd> <kbd>w</kbd> move left 
 
@@ -15,4 +15,12 @@ A top-down shooter.
 
 <kbd>↓</kbd> <kbd>d</kbd> move down
 
-move mouse to aim
+move mouse to aim, hold left mouse button to shoot
+
+## Run
+Game requires pygame2 to be installed.
+```sh
+git clone https://github.com/johannesHHM/slimy-day.git
+cd slimy-day
+python source/game.py
+```
